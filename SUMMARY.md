@@ -2,7 +2,7 @@
 
 * [Introduction](README.md)
 
-## Core <a id="core-1"></a>
+## 🏭Core <a id="core-1"></a>
 
 * [Framework](core-1/framework.md)
 * [Types](core-1/types.md)
@@ -10,54 +10,54 @@
 * [Platform Integration](core-1/platform-integration.md)
 * [Conventions](core-1/conventions.md)
 
-## Data Model
+## 🌳Data Model
 
 * [Widgets](data-model/widgets.md)
 * [Elements](data-model/elements.md)
 * [Render Tree](data-model/render-tree.md)
 * [Box Model](data-model/box-model.md)
 
-## Rendering
+## 🎨Rendering
 
 * [Layout](rendering/layout.md)
 * [Painting](rendering/painting.md)
 * [Compositing](rendering/compositing.md)
 * [Semantics](rendering/semantics.md)
 
-## Interaction
+## 👆Interaction
 
 * [Gestures](interaction/gestures.md)
 * [Focus](interaction/focus.md)
 
-## Scrolling
+## 📜Scrolling
 
 * [Scrollable](scrolling/scrollable.md)
 * [Viewports](scrolling/viewports.md)
 * [Viewport Layout](scrolling/viewport-layout.md)
 
-## Slivers
+## 🥒Slivers
 
 * [Sliver Model](slivers/sliver-model.md)
 * [Persistent Headers](slivers/persistent-headers.md)
 * [Container Slivers](slivers/container-slivers.md)
 * [Dynamic Slivers](slivers/dynamic-slivers.md)
 
-## Animation
+## 🎥Animation
 
 * [Animation](animation/animation.md)
 
-## Assets
+## 🏙Assets
 
 * [Asset Management](assets/asset-management.md)
 * [Images](assets/images.md)
 
-## Text
+## 🔠Text
 
 * [Text Rendering](text/text-rendering.md)
 * [Text Input](text/text-input.md)
 * [Text Editing](text/text-editing.md)
 
-## User Interface
+## 📱User Interface
 
 * [Containers](user-interface/containers.md)
 * [Decoration](user-interface/decoration.md)
@@ -65,7 +65,7 @@
 * [Tables](user-interface/tables.md)
 * [Material](user-interface/material.md)
 
-## Business Logic
+## 🧠Business Logic
 
 * [Navigation](business-logic/navigation.md)
 * [State Management](business-logic/state-management.md)
