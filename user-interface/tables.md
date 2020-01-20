@@ -28,7 +28,7 @@
 
 ## How are columns widths calculated?
 
-* A collection of `TableColumnWidth` instances describe how each column consumes space in the table. During layout, these instances are used to produce concrete widths given the incoming constraints \(via `RenderTable.\_computeColumnWidths`\).
+* A collection of `TableColumnWidth` instances describe how each column consumes space in the table. During layout, these instances are used to produce concrete widths given the incoming constraints \(via `RenderTable._computeColumnWidths`\).
   * Intrinsic widths and flex factors are computed for each column by locating the appropriate `TableColumnWidth` and passing the maximum width constraint as well as all contained cells.
     * The column’s width is initially defined as its maximum intrinsic width \(flex factor only increases this width\). Later, column widths may be reduced to satisfy incoming constraints.
     * Table width is therefore computed by summing the maximum intrinsic width of all columns.
@@ -54,15 +54,15 @@
 
 * The table’s intrinsic widths are calculated as the sum of each column’s largest intrinsic width \(using maximum or minimum dimensions with no height constraint, via `TableColumnWidth`\).
 * The table’s minimum and maximum intrinsic heights are equivalent, representing the sum of the largest intrinsic height found in each row \(using the calculated column width as input\). That is, each row is as tall as its tallest child, with the table’s total height corresponding to the sum of all such heights.
-  * Concrete column widths are computed \(via `RenderTable.\_computeColumnWidths`\) using the width argument as a tight constraint.
+  * Concrete column widths are computed \(via `RenderTable._computeColumnWidths`\) using the width argument as a tight constraint.
   * Next, the largest maximum intrinsic height for each row is calculated \(via `RenderBox.getMaxIntrinsicHeight`\) using the calculated column width. The maximum row heights are summed to produce the table’s intrinsic height.
 
 ## How does a table layout its children?
 
 * If the table has zero columns or rows, it’s as small as possible given the incoming constraints.
-* First, concrete columns widths are calculated. These widths are incrementally summed to produce a list of x-coordinates describing the left edge of each column \(`RenderTable.\_columnLefts`\). The copy of this list used by layout is flipped for right-to-left locales. The overall table width is defined as the sum of all columns widths \(e.g., the last column x-coordinate plus the last column’s width\).
-* Next, a list of a y-coordinates describing the top edge of each row is calculated incrementally \(`RenderTable.\_rowTops`\). Child layout proceeds as this list is calculated \(i.e., row-by-row\).
-  * The list of row tops \(`RenderTable.\_rowTops`\) is cleared and seeded with an initial y-coordinate of zero \(i.e., layout starts from the origin along the y-axis\). The current row height is zeroed as are before- and after-baseline distances. These values track the maximum dimensions produced as cells within the row are laid out. The before-baseline distance is the maximum distance from a child’s top to its baseline; the after-baseline distance is the maximum distance from a child’s baseline to its bottom.
+* First, concrete columns widths are calculated. These widths are incrementally summed to produce a list of x-coordinates describing the left edge of each column \(`RenderTable._columnLefts`\). The copy of this list used by layout is flipped for right-to-left locales. The overall table width is defined as the sum of all columns widths \(e.g., the last column x-coordinate plus the last column’s width\).
+* Next, a list of a y-coordinates describing the top edge of each row is calculated incrementally \(`RenderTable._rowTops`\). Child layout proceeds as this list is calculated \(i.e., row-by-row\).
+  * The list of row tops \(`RenderTable._rowTops`\) is cleared and seeded with an initial y-coordinate of zero \(i.e., layout starts from the origin along the y-axis\). The current row height is zeroed as are before- and after-baseline distances. These values track the maximum dimensions produced as cells within the row are laid out. The before-baseline distance is the maximum distance from a child’s top to its baseline; the after-baseline distance is the maximum distance from a child’s baseline to its bottom.
   * Layout pass: iterate over all non-null children within the row, updating parent data \(i.e., x- and y-coordinates within the table\) and performing layout based on the child’s vertical alignment \(read from parent data and set by `TableCell`, a `ParentDataWidget` subclass\).
     * Children with top, middle, or bottom alignment are laid out with unbounded height and a tight width constraint corresponding to the column’s width.
     * Children with baseline alignment are also laid out with unbounded height and a tight width constraint.
@@ -75,13 +75,13 @@
     * Children with top, middle, and bottom alignment are positioned at the column’s left edge and the row’s top, middle, or bottom edges, respectively.
     * Children with baseline alignment and an actual baseline are positioned such that all baselines align \(i.e., each child’s baseline is coincident with the maximum before baseline distance\). Those without baselines have already been positioned.
     * Children with fill alignment are now laid out with tight constraints matching the row’s height and the column’s width; children are positioned at the column’s left edge and the row’s top edge.
-  * Proceed to the next row by calculating the next row’s top using the row height \(and adding it to `RenderTable.\_rowTops`\).
+  * Proceed to the next row by calculating the next row’s top using the row height \(and adding it to `RenderTable._rowTops`\).
 * The table’s width and height \(i.e., size\) is defined as the sum of columns widths and row heights, respectively.
 
 ## How does a table paint its children?
 
 * If the table has zero columns or rows, its border \(if defined\) is painted into a zero-height rectangle matching the table’s width.
-* Each non-null decoration \(`RenderTable.\_rowDecorations`\) is painted via `Decoration.createBoxPainter`. Decorations are positioned using the incoming offset and the list of row tops \(`RenderTable.\_rowTops`\).
+* Each non-null decoration \(`RenderTable._rowDecorations`\) is painted via `Decoration.createBoxPainter`. Decorations are positioned using the incoming offset and the list of row tops \(`RenderTable._rowTops`\).
 * Each non-null child is painted at the position calculated during layout, adjusted by the incoming offset.
 * Finally, the table’s border is painted using the list of row and column edges \(these lists are filtered such that only interior edges are passed to `TableBorder.paint`\).
   * The border will be sized to match the total width consumed by columns and total height consumed by rows.

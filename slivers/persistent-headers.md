@@ -17,7 +17,7 @@
     * `RenderSliverPersistentHeader.layoutChild`: invoked by subclasses to updates then lay out children within the largest visible portion of the header \(between maximum and minimum extent\). Subclasses provide a scroll offset, maximum extent, and overlap flag, all of which may differ from the incoming constraints.
       * Shrink offset is set to the scroll offset \(how far the header is before the viewport’s leading edge\) and is capped at the max extent. Conceptually, this represents how much of the header is off screen.
       * If the child has changed size or the shrink offset has changed, the box is given an opportunity to update its appearance \(via `RenderSliverPersistentHeader.updateChild`\). This is done within a layout callback since, in the common case, the child is built dynamically by the delegate. This is an example of interleaving build and layout.
-        * This flow is facilitated by the persistent header widgets \(e.g., `\_SliverPersistentHeaderRenderObjectWidget\`), which utilize a custom render object element \(`\_SliverPersistentHeaderElement\`).
+        * This flow is facilitated by the persistent header widgets \(e.g., `_SliverPersistentHeaderRenderObjectWidget`), which utilize a custom render object element \(`_SliverPersistentHeaderElement`).
         * When the child is updated \(via `RenderSliverPersistentHeader.updateChild`\), the specialized element updates its child’s element \(via `Element.updateChild`\) using the widget produced by the delegate’s build method.
       * Finally, the child is laid out with its main extent loosely constrained to the portion of the header that’s visible -- with the minimum extent as a lower bound \(i.e., so that the box is never forced to be smaller than the minimum extent\).
 

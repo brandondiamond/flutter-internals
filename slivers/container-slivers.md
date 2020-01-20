@@ -71,7 +71,7 @@
 * The only method that updates the index stored in `SliverMultiBoxAdaptorParentData` is `RenderSliverBoxChildManager.didAdoptChild`.
 * This method is invoked whenever the render object adds a child to its child list. It is not invoked when the keep alive bucket is altered \(i.e., it only considers the effective child list\).
 * Changes are generally driven by the widget layer and the `SliverChildDelegate` in particular. As the list’s manager \(and a convenient integration point between the render tree and the widget\), `SliverMultiBoxAdaptorElement` facilitates the process.
-  * `SliverMultiBoxAdaptorElement` tracks when children are created and destroyed \(either explicitly or during a rebuild\), setting `SliverMultiBoxAdaptorElement.\_currentlyUpdatingChildIndex` to the intended index just before the render tree is updated. The index also serves as the slot for overridden `RenderObjectElement` operations.
+  * `SliverMultiBoxAdaptorElement` tracks when children are created and destroyed \(either explicitly or during a rebuild\), setting `SliverMultiBoxAdaptorElement._currentlyUpdatingChildIndex` to the intended index just before the render tree is updated. The index also serves as the slot for overridden `RenderObjectElement` operations.
   * Updates pass through the element to the `RenderSliverMultiBoxAdaptor` \(according to Flutter’s usual flow\), which invokes `RenderSliverBoxChildManager.didAdoptChild` any time the index might change.
   * Finally, the currently updating index is written to the child’s parent data by the manager.
 
@@ -82,10 +82,10 @@
   * Keep alive children are not included in the effective child list. Therefore, the helpers provided by `ContainerRenderObjectMixin` do not interact with these children \(though a few operations have been overridden\).
   * Keep alive children remain attached to the render tree in all other respects required by the render object protocol \(they are adopted, dropped, attached, detached, etc\).
 * Both child models \(i.e., the child list and the keep alive bucket\) are considered for non-rendering operations. The keep alive bucket is ignored when iterating for semantics, notifying the manager when a child is adopted, hit testing, painting, and performing layout.
-* Child render boxes are obtained via `RenderSliverMultiBoxAdaptor.\_createOrObtainChild`, which consults the keep alive bucket before requesting the manager to provide a child. Note that the manager incorporates an additional caching layer \(i.e., to avoid rebuilding children unless the entire list has been rebuilt\).
+* Child render boxes are obtained via `RenderSliverMultiBoxAdaptor._createOrObtainChild`, which consults the keep alive bucket before requesting the manager to provide a child. Note that the manager incorporates an additional caching layer \(i.e., to avoid rebuilding children unless the entire list has been rebuilt\).
   * If the child is found in the keep alive bucket, it is first dropped \(i.e., because it is being moved to a different child model\) and then re-inserted into the child list. The list is marked dirty because its children have changed.
   * If the manager provides the child, it also inserts it into the render object’s child list.
-* Child render boxes are destroyed by `RenderSliverMultiBoxAdaptor.\_destroyOrCacheChild`, which consults the keep alive flag before requesting the manager to remove the child.
+* Child render boxes are destroyed by `RenderSliverMultiBoxAdaptor._destroyOrCacheChild`, which consults the keep alive flag before requesting the manager to remove the child.
   * If the child has the keep alive flag enabled, it is first removed from the child list and then readopted \(i.e., switched to the keep alive child model\). The manager is not notified of this adoption. Last, the list is marked dirty because its children have changed.
   * If the manager destroys the child, it also removes it from the render object’s child list.
 * The child list may be manipulated using the usual render object container methods. Insert, remove, remove all, and move have been overridden to support both child models \(i.e., keep alive and container\).
@@ -114,7 +114,7 @@
     * If at any point the adaptor’s child list is mutated \(i.e., because a child is added or removed\), it will be dirtied for layout, painting, and compositing.
     * If a child is being kept alive \(i.e., not visible but otherwise retained\), care is taken to avoid using when manipulating the child list \(e.g., it never serves as the “after” argument when inserting children\).
   * Last, if the list underflowed during the most recent layout attempt, the element will attempt to build one additional child \(using the next available index\). If this produces a child, it will be inserted into its parent’s child list, scheduling a relayout. This, in turn, will provide the delegate an opportunity to build additional children to fill the remaining space in the viewport.
-  * The child associated with the greatest index is tracked as `SliverMultiBoxAdaptorElement.\_currentBeforeChild`. This serves as the “after” argument whenever the child list is manipulated, preserving the index order.
+  * The child associated with the greatest index is tracked as `SliverMultiBoxAdaptorElement._currentBeforeChild`. This serves as the “after” argument whenever the child list is manipulated, preserving the index order.
 
 ## How does the multi-box adaptor paint its children?
 

@@ -40,7 +40,7 @@
 
 * The center sliver may be offset by `RenderSliver.centerOffsetAdjustment` \(added to the current `ViewportOffset.pixels` value\). This effectively shifts the zero scroll offset \(e.g., to visually center the center sliver\).
 * The zero scroll offset can itself be shifted by a proportion of the viewport’s main extent via `RenderViewport.anchor`. Zero positions the zero offset at the viewport’s leading edge; one positions the offset at the trailing edge \(and `0.5` would position it at the midpoint\).
-* These adjustments are mixed into the calculation early on \(see `RenderViewport.performLayout` and `RenderViewport.\_attemptLayout`\). Conceptually, it is easiest to ignore them other than to know that they shift the centerline’s visual position.
+* These adjustments are mixed into the calculation early on \(see `RenderViewport.performLayout` and `RenderViewport._attemptLayout`\). Conceptually, it is easiest to ignore them other than to know that they shift the centerline’s visual position.
 * The center sliver may also paint itself at an arbitrary offset via `SliverGeometry.paintOrigin`, though this won’t actually move the zero offset.
 
 ## What are some of the quirks of viewport layout?

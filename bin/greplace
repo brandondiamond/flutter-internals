@@ -1,7 +1,7 @@
 #!/bin/sh
 
 TMP=`mktemp`
-for f in $(grep -lr "$1" .); do
+for f in $(find . -name '*.md' | xargs grep -lr "$1"); do
   # Replace all top-level bullets with H1s, wrap with newlines, and demote bullets.
   sed -E "s/$1/$2/g" "$f" > "$TMP"
   mv "$TMP" "$f"
