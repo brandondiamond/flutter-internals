@@ -13,7 +13,7 @@
   * Constraints are unbounded when max is infinite.
   * Constraints are expanding when tightly infinite.
   * Constraints are infinite when min is infinite \(max must also be infinite; thus, this is also expanding\).
-* `BoxHitTestResult` is an aggregator that collects the entries associated with a single hit test query. `BoxHitTestResult` includes several box-specific helpers, `i.e`., `BoxHitTestResult.addWithPaintOffset`, `BoxHitTestResult.addWithPaintTransform`, etc.
+* `BoxHitTestResult` is an aggregator that collects the entries associated with a single hit test query. `BoxHitTestResult` includes several box-specific helpers, i.e., `BoxHitTestResult.addWithPaintOffset`, `BoxHitTestResult.addWithPaintTransform`, etc.
 * `BoxHitTestEntry` represents a box that was hit during hit testing. It captures the position of the collision in local coordinates \(`BoxHitTestEntry.localPosition`\).
 
 ## What are the render box tree building blocks? 
@@ -47,11 +47,11 @@
 * The render box model describes intrinsic dimensions in terms of minimum and maximum values for width and height.
   * Minimum intrinsic width is the smallest width before the box cannot paint correctly without clipping.
     * Intuition: making the box thinner would clip its contents.
-    * If width is determined by height \(ignoring constraints\), the incoming height \(which may be infinite, `i.e`., unconstrained\) should be used. Otherwise, ignore the height.
+    * If width is determined by height \(ignoring constraints\), the incoming height \(which may be infinite, i.e., unconstrained\) should be used. Otherwise, ignore the height.
   * Minimum intrinsic height is the same concept for height.
   * Maximum intrinsic width is the smallest width such that further expansion would not reduce minimum intrinsic height \(for that width\).
     * Intuition: making the box wider won’t help fit more content.
-    * If width is determined by height \(ignoring constraints\), the incoming height \(which may be infinite, `i.e`., unconstrained\) should be used. Otherwise, ignore the height.
+    * If width is determined by height \(ignoring constraints\), the incoming height \(which may be infinite, i.e., unconstrained\) should be used. Otherwise, ignore the height.
   * Maximum intrinsic height is the same concept for height.
 * The specific meaning of intrinsic dimensions depends on the implementation.
   * Text is width-in-height-out.

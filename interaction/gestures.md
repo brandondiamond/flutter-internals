@@ -33,8 +33,8 @@ description: '`TODO`: Expand.'
 
 ## What auxiliary classes support gesture handling?
 
-* There are two major categories of gesture recognizers, multi-touch recognizers \(`i.e`., `MultiTapGestureRecognizer`\) that simultaneously process multiple pointers \(`i.e`., tapping with two fingers will register twice\), and single-touch recognizer \(`i.e`., `OneSequenceGestureRecognizer`\) that will only consider events from a single pointer \(`i.e`., tapping with two fingers will register once\). 
+* There are two major categories of gesture recognizers, multi-touch recognizers \(i.e., `MultiTapGestureRecognizer`\) that simultaneously process multiple pointers \(i.e., tapping with two fingers will register twice\), and single-touch recognizer \(i.e., `OneSequenceGestureRecognizer`\) that will only consider events from a single pointer \(i.e., tapping with two fingers will register once\). 
 * There is a helper “Drag” object that is used to communicate drag-related updates to other parts of the framework \(like `DragScrollActivity`\)
 * There’s a `VelocityTracker` that generates fairly accurate estimates about drag velocity using curve fitting.
-* There are local and global `PointerRoutes` in `PointerRouter`. Local routes are used as described above; global routes are used to react to any interaction \(`i.e`., to dismiss a tooltip\).
+* There are local and global `PointerRoutes` in `PointerRouter`. Local routes are used as described above; global routes are used to react to any interaction \(i.e., to dismiss a tooltip\).
 
