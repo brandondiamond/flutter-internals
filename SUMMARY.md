@@ -5,10 +5,10 @@
 ## 🏭Core
 
 * [Framework](core/framework.md)
-* [Types](core-1/types.md)
-* [Messaging](core-1/messaging.md)
-* [Platform Integration](core-1/platform-integration.md)
-* [Conventions](core-1/conventions.md)
+* [Types](core/types.md)
+* [Messaging](core/messaging.md)
+* [Platform Integration](core/platform-integration.md)
+* [Conventions](core/conventions.md)
 
 ## 🌳Data Model
 
