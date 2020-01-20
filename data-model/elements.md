@@ -1,5 +1,6 @@
 # Elements
 
+
 ## What are elements?
 
 * The element tree is anchored in the `WidgetsBinding` and established via `runApp` / `RenderObjectToWidgetAdapter`. Widgets are immutable representations of UI configuration data. Widgets are “inflated” into `Element` instances, which serve as their mutable counterparts. Among other things, elements model the relationship between widgets \(e.g., the widget tree\), store state / inherited relationships, and participate in the build process.
@@ -16,16 +17,15 @@
 * Render object elements are responsible for managing an associated render object. `RenderObjectElement.update` will cause the associated render object to be updated to match a new configuration \(widget\). This render object may have children; however, there may be several intermediate elements between its render object element and any descendent render object elements \(due to intervening component elements\). Slot tokens are passed down the element tree so that the render object elements corresponding to these children can integrate with the parent render object. This is managed via `RenderObjectElement.insertChildRenderObject`, `RenderObjectElement.moveChildRenderObject`, and `RenderObjectElement.removeChildRenderObject`.
 * Elements can be moved during a frame. Such elements are “forgotten” so that they are excluding from iteration / updates, with the actual mutation taking place when the element is added to its new parent.
 * When updating, children must be updated, too. To avoid unnecessarily inflation \(and potential loss of state\), the new and old child lists are synchronized using a linear reconciliation scheme optimized for empty lists, matched lists, and lists with one mismatched region:
-
-1. The leading elements and widgets are matched by key and updated
-2. The trailing elements and widgets are matched by key with updates queued \(update order is significant\)
-3. A mismatched region is identified in the old and new lists
-4. Old elements are indexed by key
-5. Old elements without a key are updated with null \(deleted\)
-6. The index is consulted for each new, mismatched widget
-7. New widgets with keys in the index update together \(re-use\)
-8. New widgets without matches are updated with null \(inflated\)
-9. Remaining elements in the index are updated with null \(deleted\)
+    1. The leading elements and widgets are matched by key and updated
+    2. The trailing elements and widgets are matched by key with updates queued \(update order is significant\)
+    3. A mismatched region is identified in the old and new lists
+    4. Old elements are indexed by key
+    5. Old elements without a key are updated with null \(deleted\)
+    6. The index is consulted for each new, mismatched widget
+    7. New widgets with keys in the index update together \(re-use\)
+    8. New widgets without matches are updated with null \(inflated\)
+    9. Remaining elements in the index are updated with null \(deleted\)
 
 ## What are the render object element building blocks?
 
