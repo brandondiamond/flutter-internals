@@ -1,0 +1,9 @@
+#!/bin/bash
+TMP=`mktemp`
+for f in $(find . -name '*.md'); do
+  # Find everything that looks like an identifier and mark it as such.
+  sed -E -e 's/(\\_)[a-zA-Z.\\_]+|((\\_)|[a-zA-Z0-9])+((\\_)|[A-Z.])((\\_)|[a-zA-Z0-9]|\.([a-zA-Z0-9]|(\\_)))+/`&`/g'
+  sed -e $'/^\*/s/^\*\(.*\)$/\\\n##\\1\\\n/' -e '/\s*\*/s/^  //' "$f" > "$TMP"
+  mv "$TMP" "$f"
+done
+
