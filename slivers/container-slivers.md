@@ -1,4 +1,4 @@
-# Container Slivers
+# Container `Slivers`
 
 
 ## How do slivers with multiple children manage parent data?
@@ -41,7 +41,7 @@
 * `AutomaticKeepAlive` manages an immediate `KeepAlive` child based on the `KeepAliveNotifications` emitted by descendent widgets.
   * These notifications indicate that the subtree is to be kept alive \(and must therefore use the `KeepAliveParentDataMixin`\).
   * A handler associated with the notification is invoked by the client to indicate that it may be released. If the client is deactivated \(i.e., removed from the tree\), it must call the handler; else, the widget will be leaked. The handler must first be called if a new `KeepAliveNotification` is generated.
-  * `AutomaticKeepAliveClientMixin` provides helpers to help State subclasses appropriately manage `KeepAliveNotifications`.
+  * `AutomaticKeepAliveClientMixin` provides helpers to help `State` subclasses appropriately manage `KeepAliveNotifications`.
 * The “`keepAlive`” flag is honored by `RenderSliverMultiBoxAdaptor`, which maintains a keep alive bucket and ensures that the associated children remain in the render tree but are not actually rendered.
 
 ## What services must the child manager provide?
@@ -72,7 +72,7 @@
 * This method is invoked whenever the render object adds a child to its child list. It is not invoked when the keep alive bucket is altered \(i.e., it only considers the effective child list\).
 * Changes are generally driven by the widget layer and the `SliverChildDelegate` in particular. As the list’s manager \(and a convenient integration point between the render tree and the widget\), `SliverMultiBoxAdaptorElement` facilitates the process.
   * `SliverMultiBoxAdaptorElement` tracks when children are created and destroyed \(either explicitly or during a rebuild\), setting `SliverMultiBoxAdaptorElement._currentlyUpdatingChildIndex` to the intended index just before the render tree is updated. The index also serves as the slot for overridden `RenderObjectElement` operations.
-  * Updates pass through the element to the `RenderSliverMultiBoxAdaptor` \(according to Flutter’s usual flow\), which invokes `RenderSliverBoxChildManager.didAdoptChild` any time the index might change.
+  * Updates pass through the element to the `RenderSliverMultiBoxAdaptor` \(according to `Flutter`’s usual flow\), which invokes `RenderSliverBoxChildManager.didAdoptChild` any time the index might change.
   * Finally, the currently updating index is written to the child’s parent data by the manager.
 
 ## How does a multi-box adaptor manage its children?

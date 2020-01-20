@@ -15,6 +15,6 @@ description: TODO
 ## `adoptChild`\(\) and `dropChild`\(\) from `AbstractNode` must be called after updating the actual child model to allow the framework to react accordingly.
 
 
-## Many widgets are comprised of lower-level widgets, generally prefixed with raw \(e.g., `GestureDetector` and `RawGestureDetector`, Chip and `RawChip`, `MaterialButton` and `RawMaterialButton`\). Text and `RichText` is a naming exception.
+## Many widgets are comprised of lower-level widgets, generally prefixed with raw \(e.g., `GestureDetector` and `RawGestureDetector`, `Chip` and `RawChip`, `MaterialButton` and `RawMaterialButton`\). Text and `RichText` is a naming exception.
 
 

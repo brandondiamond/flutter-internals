@@ -1,5 +1,5 @@
 ---
-description: '`TODO`: Expand.'
+description: '`TODO`: `Expand`.'
 ---
 
 # Gestures

@@ -3,7 +3,7 @@
 
 ## What are elements?
 
-* The element tree is anchored in the `WidgetsBinding` and established via `runApp` / `RenderObjectToWidgetAdapter`. Widgets are immutable representations of UI configuration data. Widgets are “inflated” into Element instances, which serve as their mutable counterparts. Among other things, elements model the relationship between widgets \(e.g., the widget tree\), store state / inherited relationships, and participate in the build process.
+* The element tree is anchored in the `WidgetsBinding` and established via `runApp` / `RenderObjectToWidgetAdapter`. Widgets are immutable representations of UI configuration data. Widgets are “inflated” into `Element` instances, which serve as their mutable counterparts. Among other things, elements model the relationship between widgets \(e.g., the widget tree\), store state / inherited relationships, and participate in the build process.
 * Many lifecycle events are triggered by changes to the element tree. In particular, all elements are associated with a `BuildOwner` that is responsible for tracking dirty elements and, during `WidgetsBinding.drawFrame`, re-building the widget / element tree. This drives lifecycle events within widget and state objects.
 * Elements are initially mounted. They may then be updated multiple times. An element may be deactivated \(by the parent via `Element.deactivateChild`\); it can be activated within the same frame, else it will be unmounted.
 * `Element.updateChild` is used to alter the configuration \(widget\) of a given child, potentially inflating a new element if none exists, the new and old widgets do not have the same type, or the widgets have different keys. Updating an element may update the element’s children.

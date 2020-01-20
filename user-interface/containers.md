@@ -3,11 +3,11 @@
 
 ## What are the container building blocks?
 
-* Flex is the base class for Row and Column. It implements the flex layout protocol in an axis-agnostic manner.
-* Row is identical to Flex with a default axis of `Axis.horizontal`.
-* Column is identical to Flex with a default axis of `Axis.vertical`.
-* Flexible is the base class for Expanded. It is a parent data widget that alters its child’s flex value. Its default fit is `FlexFit.loose`, which causes its child to be laid out with loose constraints
-* Expanded is identical to Flexible with a default fit of `FlexFit.tight`. Consequently, it passes tight constraints to its children, requiring them to fill all available space.
+* Flex is the base class for `Row` and `Column`. It implements the flex layout protocol in an axis-agnostic manner.
+* Row is identical to `Flex` with a default axis of `Axis.horizontal`.
+* Column is identical to `Flex` with a default axis of `Axis.vertical`.
+* Flexible is the base class for `Expanded`. It is a parent data widget that alters its child’s flex value. Its default fit is `FlexFit.loose`, which causes its child to be laid out with loose constraints
+* Expanded is identical to `Flexible` with a default fit of `FlexFit.tight`. Consequently, it passes tight constraints to its children, requiring them to fill all available space.
 
 ## How are flex-based containers laid out?
 
@@ -28,9 +28,9 @@
   * If there is no child and no explicit size:
     * Shrink when the incoming constraints are unbounded \(via `LimitedBox`\); else, expand \(via `ConstrainedBox`\).
   * If there is an alignment:
-    * Align the child within the parent \(via Align\).
+    * Align the child within the parent \(via `Align`\).
   * If there is padding or the decoration has padding...
-    * Apply the total padding to the child \(via Padding\).
+    * Apply the total padding to the child \(via `Padding`\).
   * If there is a decoration:
     * Wrap the child in the decoration \(via `DecoratedBox`\).
   * If there is a foreground decoration:
@@ -38,7 +38,7 @@
   * If  there are extra constraints:
     * Apply the extra constraints to the incoming constraints \(via `ConstrainedBox`\).
   * If there is a margin...
-    * Apply the margin to the child \(via Padding\).
+    * Apply the margin to the child \(via `Padding`\).
   * If there is a transform...
-    * Transform the child accordingly \(via Transform\).
+    * Transform the child accordingly \(via `Transform`\).
 

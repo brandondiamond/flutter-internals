@@ -1,4 +1,4 @@
-# Asset Management
+# Asset `Management`
 
 
 ## How are assets managed?
@@ -10,5 +10,5 @@
 ## How are assets fetched?
 
 * `NetworkAssetBundle` loads resources over the network. It does not implement caching; presumably, this is provided by the network layer. It provides a thin wrapper around dart’s `HttpClient`.
-* `PlatformAssetBundle` is a `CachingAssetBundle` subclass that fetches resources from a platform-specific application directory via platform messaging \(specifically, Engine::`HandleAssetPlatformMessage`\).
+* `PlatformAssetBundle` is a `CachingAssetBundle` subclass that fetches resources from a platform-specific application directory via platform messaging \(specifically, `Engine`::`HandleAssetPlatformMessage`\).
 

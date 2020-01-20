@@ -1,4 +1,4 @@
-# Text Input
+# Text `Input`
 
 
 ## How are key events sent from the keyboard?
@@ -12,7 +12,7 @@
 
 * `IME` stands for “input method editor,” which corresponds to any sort of on-screen text editing interface, such as the software keyboard. There can only be one active `IME` at a time.
 
-## How does Flutter interact with `IMEs`?
+## How does `Flutter` interact with `IMEs`?
 
 * `SystemChannels.textInput` exposes a method channel that implements a transactional interface for interacting with an `IME`. Operations are scoped to a given transaction \(client\), which is implicit once created. Outbound methods support configuring the `IME`, showing/hiding UI, and update editing state \(including selections\); inbound methods handle `IME` actions and editing changes. Convenient wrappers for this protocol make much of this seamless.
 

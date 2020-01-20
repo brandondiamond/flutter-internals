@@ -9,7 +9,7 @@
   * `ParentDataWidget` utilizes this flow to update the first descendant render object’s parent data \(via `ParentDataElement._applyParentData`, which calls `RenderObjectElement._updateParentData`\); this will be triggered any time the widget is updated.
 * `PreferredSizeWidget` is not widely used but an interesting example of adapting widgets to a specific need \(e.g., an `AppBar` expressing a size preference\).
 * Numerous helper subclasses exist, most notably including `SingleChildRenderObjectWidget`, `MultiChildRenderObjectWidget`, `LeafRenderObjectWidget`. These provide storage for a child / children without implementing the underlying child model.
-* Anonymous widgets can be created using Builder and `StatefulBuilder`.
+* Anonymous widgets can be created using `Builder` and `StatefulBuilder`.
 
 ## How does building work?
 
@@ -22,14 +22,14 @@
   * Proxy elements use notifications to indicate when underlying data has changed. In the case of `InheritedElement`, each dependant’s `Element.didChangeDependencies` is invoked which, by default, marks that element as dirty.
 * Once per frame, `BuildOwner.buildScope` will walk the element tree in depth-first order, only considering those nodes that have been marked dirty. By locking the tree and iterating in depth first order, any nodes that become dirty while rebuilding must necessarily be lower in the tree; this is because building is a unidirectional process -- a child cannot mark its parent as being dirty. Thus, it is not possible for build cycles to be introduced and it is not possible for elements that have been marked clean to become dirty again.
 * As the build progresses, `ComponentElement.performRebuild` delegates to the `ComponentElement.build` method to produce a new child widget for each dirty element. Next, `Element.updateChild` is invoked to efficiently reuse or recreate an element for the child. Crucially, if the child’s widget hasn’t changed, the build is immediately cut off. Note that if the child widget did change and `Element.update` is needed, that child will itself be marked dirty, and the build will continue down the tree.
-* Each Element maintains a map of all `InheritedElement` ancestors at its location. Thus, accessing dependencies from the build process is a constant time operation.
+* Each `Element` maintains a map of all `InheritedElement` ancestors at its location. Thus, accessing dependencies from the build process is a constant time operation.
 * If `Element.updateChild` invokes `Element.deactivateChild` because a child is removed or moved to another part of the tree, `BuildOwner.finalizeTree` will unmount the element if it isn’t reintegrated by the end of the frame.
 
 ## How do stateful widgets work?
 
-* `StatefulWidget` is associated with `StatefulElement`, a `ComponentElement` that is almost identical to `StatelessElement`. The key difference is that the `StatefulElement` references the State of the corresponding `StatefulWidget`, and invokes lifecycle methods on that instance at key moments. For instance, when `StatefulElement.update` is invoked, the State instance is notified via `State.didUpdateWidget`.
-* `StatefulElement` creates the associated State instance when it is constructed \(i.e., in `StatefulWidget.createElement`\). Then, when the `StatefulElement` is built for the first time \(via `StatefulElement._firstBuild`, called by `StatefulElement.mount`\), `State.initState` is invoked. Crucially, State instance and the `StatefulWidget` share the same element.
-* Since State is associated with the underlying `StatefulElement`, if the widget changes, provided that `StatefulElement.updateChild` is able to reuse the same element \(because the widget’s runtime type and key both match\), State will be preserved. Otherwise, the State will be recreated.
+* `StatefulWidget` is associated with `StatefulElement`, a `ComponentElement` that is almost identical to `StatelessElement`. The key difference is that the `StatefulElement` references the `State` of the corresponding `StatefulWidget`, and invokes lifecycle methods on that instance at key moments. For instance, when `StatefulElement.update` is invoked, the `State` instance is notified via `State.didUpdateWidget`.
+* `StatefulElement` creates the associated `State` instance when it is constructed \(i.e., in `StatefulWidget.createElement`\). Then, when the `StatefulElement` is built for the first time \(via `StatefulElement._firstBuild`, called by `StatefulElement.mount`\), `State.initState` is invoked. Crucially, `State` instance and the `StatefulWidget` share the same element.
+* Since `State` is associated with the underlying `StatefulElement`, if the widget changes, provided that `StatefulElement.updateChild` is able to reuse the same element \(because the widget’s runtime type and key both match\), `State` will be preserved. Otherwise, the `State` will be recreated.
 
 ## Why is changing tree depth expensive?
 

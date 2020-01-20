@@ -2,14 +2,14 @@
 description: TODO
 ---
 
-# Platform Integration
+# Platform `Integration`
 
 
-## How does Flutter interact with the system clipboard?
+## How does `Flutter` interact with the system clipboard?
 
 * Clipboard and `ClipboardData`
 
-## How does Flutter interact with the host system?
+## How does `Flutter` interact with the host system?
 
 
 ## How are device dimensions \(insets, padding, overlays\) conveyed?

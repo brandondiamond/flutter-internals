@@ -1,4 +1,4 @@
-# Persistent Headers
+# Persistent `Headers`
 
 
 ## How do persistent headers work?
@@ -51,7 +51,7 @@
 
 * `RenderSliverFloatingPersistentHeader` is similar to its scrolling sibling, but reattaches to the viewport’s leading edge as soon as the user scrolls in its direction. It then shrinks and detaches if the user scrolls away.
   * The floating header tracks scroll offset, detecting when the user begins scrolling toward the header. The header maintains an effective scroll offset that matches the real scroll offset when scrolling away, but that enables floating otherwise.
-    * It does this by jumping ahead such that the sliver’s trailing edge \(as measured using the effective offset and maximum extent\) is coincident with the viewport’s leading edge. This is the “floating threshold.” All subsequent scrolling deltas are applied to the effective offset until the user scrolls the header before the floating threshold. At this point, normal behavior is resumed.
+    * It does this by jumping ahead such that the sliver’s trailing edge \(as measured using the effective offset and maximum extent\) is coincident with the viewport’s leading edge. This is the “floating threshold.” `All` subsequent scrolling deltas are applied to the effective offset until the user scrolls the header before the floating threshold. At this point, normal behavior is resumed.
   * `RenderSliverFloatingPersistentHeader.performLayout` detects the user’s scroll direction and manages an effective scroll offset. The effective scroll offset is used for updating geometry and painting, allowing the header to float above other slivers.
     * The effective scroll offset matches the actual scroll offset the first time layout is attempted or whenever the user is scrolling away from the header and the header isn’t currently floating.
     * Otherwise, the header is considered to be floating. This occurs when the user scrolls toward the header, or the header’s actual or effective scroll offset is less than its maximum extent \(i.e., the header’s effective trailing edge is at or after the viewport’s leading edge\).

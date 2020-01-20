@@ -1,4 +1,4 @@
-# Render Tree
+# Render `Tree`
 
 
 ## What are the render object building blocks?
@@ -35,7 +35,7 @@
 
 ## How do render objects manage layout?
 
-* When a render object has been marked as dirty via `RenderObject.markNeedsLayout`, `RenderObject.layout` will be invoked with constraints as input and a size as output. Both the constraints and the size are implementation-dependent; the constraints must implement Constraints whereas the size is entirely arbitrary.
+* When a render object has been marked as dirty via `RenderObject.markNeedsLayout`, `RenderObject.layout` will be invoked with constraints as input and a size as output. Both the constraints and the size are implementation-dependent; the constraints must implement `Constraints` whereas the size is entirely arbitrary.
 * If a parent depends on the child’s geometry, it must pass the `parentUsesSize` argument to layout. The implementation of `RenderObject.markNeedsLayout` / `RenderObject.sizedByParent` will need to call `RenderObject.markParentNeedsLayout` / `RenderObject.markParentNeedsLayoutForSizedByParentChange`, respectively.
 * `RenderObjects` that solely determine their sizing using the input constraints must set `RenderObject.sizedByParent` to true and perform all layout in `RenderObject.performResize`.
 * Layout cannot depend on position \(typically stored using parent data\). The position, if applicable, is solely determined by the parent. However, some `RenderObject` subtypes may utilize additional out-of-band information when performing layout. If this information changes, and the parent used it during the last cycle, `RenderObject.markParentNeedsLayout` must be invoked.
@@ -50,7 +50,7 @@
 * This bit is not set directly. Instead, it must be marked dirty whenever it might possibly change \(e.g., when adding or removing a child\). `RenderObject.markNeedsCompositingBitsUpdate` walks up the render tree, marking objects as dirty until it reaches a previously dirtied render object or a repaint boundary.
 * Later, just before painting, `PipelineOwner.flushCompositingBits` visits all dirty render objects, updating the “`needsCompositing`” bit by walking down the tree, looking for any descendent that needs compositing. This walk stops upon reaching a repaint boundary or an object that always needs compositing. If any descendent node needs compositing, all nodes along the walk need compositing, too.
 * It is important to create small “repaint sandwiches” to avoid introducing too many layers. \[?\]
-* Composited render objects are associated with an optional `ContainerLayer`. For render objects that are repaint boundaries, `RenderObject.layer` will be `OffsetLayer`. In either case, by retaining a reference to a previously used layer, Flutter is able to better utilize retained rendering -- i.e., recycle or selectively update previously rasterized bitmaps. This is possible because Layers preserve a reference to any underlying `EngineLayer`, and `SceneBuilder` accepts an “`oldLayer`” argument when building a new scene.
+* Composited render objects are associated with an optional `ContainerLayer`. For render objects that are repaint boundaries, `RenderObject.layer` will be `OffsetLayer`. In either case, by retaining a reference to a previously used layer, `Flutter` is able to better utilize retained rendering -- i.e., recycle or selectively update previously rasterized bitmaps. This is possible because `Layers` preserve a reference to any underlying `EngineLayer`, and `SceneBuilder` accepts an “`oldLayer`” argument when building a new scene.
 
 ## How do render objects handle transformations?
 

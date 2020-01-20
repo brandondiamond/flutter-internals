@@ -22,13 +22,13 @@
 
 ## How is a frame rendered?
 
-* Once a frame is scheduled and callbacks are registered \(via `SchedulerBinding.ensureFrameCallbacksRegistered`\), the engine begins requesting frames automatically. The frame callbacks invoke handlers in response to these requests. In particular, `SchedulerBinding.drawFrame` processes persistent frame callbacks which are used to implement Flutter’s rendering pipeline. `WidgetsBinding.drawFrame` overrides `RendererBinding.drawFrame` to add the build process to this pipeline.
+* Once a frame is scheduled and callbacks are registered \(via `SchedulerBinding.ensureFrameCallbacksRegistered`\), the engine begins requesting frames automatically. The frame callbacks invoke handlers in response to these requests. In particular, `SchedulerBinding.drawFrame` processes persistent frame callbacks which are used to implement `Flutter`’s rendering pipeline. `WidgetsBinding.drawFrame` overrides `RendererBinding.drawFrame` to add the build process to this pipeline.
 * The rendering pipeline builds widgets, performs layout, updates compositing bits, paints layers, and finally composites everything into a scene which it uploads to the engine \(via `RenderView.compositeFrame`\). Semantics are also updated by this process.
-* `RenderView.compositeFrame` retains a reference to the root layer which it recursively composites using `Layer.buildScene`. This iterates through all layers that “`needsAddToScene`,” which if true, composites a new frame. If false, previous invocations of `addToScene` will have stored an `EnglineLayer` in `Layer.engineLayer`, saving work \(“retained rendering”\); this is added using `SceneBuilder.addRetained`. Once a Scene is constructed, it is uploaded to the engine via `Window.render`.
+* `RenderView.compositeFrame` retains a reference to the root layer which it recursively composites using `Layer.buildScene`. This iterates through all layers that “`needsAddToScene`,” which if true, composites a new frame. If false, previous invocations of `addToScene` will have stored an `EnglineLayer` in `Layer.engineLayer`, saving work \(“retained rendering”\); this is added using `SceneBuilder.addRetained`. Once a `Scene` is constructed, it is uploaded to the engine via `Window.render`.
 
 ## How does the framework interact with the engine?
 
-* The framework primarily interacts via the Window class, a dart interface with hooks into and out of the engine.
+* The framework primarily interacts via the `Window` class, a dart interface with hooks into and out of the engine.
 * The majority of the framework’s flows are driven by frame callbacks invoked by the engine. Other flows are driven by gesture handling, platform messaging, and device messaging.
 * Each binding serves as the singleton root of a subsystem within the framework; in several cases, bindings are layered to add functionality to more fundamental bindings \(i.e., `WidgetsBinding` adds support for building to `RendererBinding`\). All direct framework/engine interaction is managed via the bindings, with the sole exception of the `RenderView`.
 

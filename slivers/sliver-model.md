@@ -1,4 +1,4 @@
-# Sliver Model
+# Sliver `Model`
 
 
 ## What are the sliver building blocks?

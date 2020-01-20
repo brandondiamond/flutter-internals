@@ -7,15 +7,15 @@
 * [Framework](core/framework.md)
 * [Types](core/types.md)
 * [Messaging](core/messaging.md)
-* [Platform Integration](core/platform-integration.md)
+* [Platform `Integration`](core/platform-integration.md)
 * [Conventions](core/conventions.md)
 
-## 🌳Data Model
+## 🌳Data `Model`
 
 * [Widgets](data-model/widgets.md)
 * [Elements](data-model/elements.md)
-* [Render Tree](data-model/render-tree.md)
-* [Box Model](data-model/box-model.md)
+* [Render `Tree`](data-model/render-tree.md)
+* [Box `Model`](data-model/box-model.md)
 
 ## 🎨Rendering
 
@@ -33,14 +33,14 @@
 
 * [Scrollable](scrolling/scrollable.md)
 * [Viewports](scrolling/viewports.md)
-* [Viewport Layout](scrolling/viewport-layout.md)
+* [Viewport `Layout`](scrolling/viewport-layout.md)
 
 ## 🥒Slivers
 
-* [Sliver Model](slivers/sliver-model.md)
-* [Persistent Headers](slivers/persistent-headers.md)
-* [Container Slivers](slivers/container-slivers.md)
-* [Dynamic Slivers](slivers/dynamic-slivers.md)
+* [Sliver `Model`](slivers/sliver-model.md)
+* [Persistent `Headers`](slivers/persistent-headers.md)
+* [Container `Slivers`](slivers/container-slivers.md)
+* [Dynamic `Slivers`](slivers/dynamic-slivers.md)
 
 ## 🎥Animation
 
@@ -48,16 +48,16 @@
 
 ## 🏙Assets
 
-* [Asset Management](assets/asset-management.md)
+* [Asset `Management`](assets/asset-management.md)
 * [Images](assets/images.md)
 
 ## 🔠Text
 
-* [Text Rendering](text/text-rendering.md)
-* [Text Input](text/text-input.md)
-* [Text Editing](text/text-editing.md)
+* [Text `Rendering`](text/text-rendering.md)
+* [Text `Input`](text/text-input.md)
+* [Text `Editing`](text/text-editing.md)
 
-## 📱User Interface
+## 📱User `Interface`
 
 * [Containers](user-interface/containers.md)
 * [Decoration](user-interface/decoration.md)
@@ -65,10 +65,10 @@
 * [Tables](user-interface/tables.md)
 * [Material](user-interface/material.md)
 
-## 🧠Business Logic
+## 🧠Business `Logic`
 
 * [Navigation](business-logic/navigation.md)
-* [State Management](business-logic/state-management.md)
-* [Async Programming](business-logic/async-programming.md)
+* [State `Management`](business-logic/state-management.md)
+* [Async `Programming`](business-logic/async-programming.md)
 * [Testing](business-logic/testing.md)
 
