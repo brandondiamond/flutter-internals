@@ -1,12 +1,13 @@
 # Containers
 
+
 ## What are the container building blocks?
 
-* `Flex` is the base class for `Row` and `Column`. It implements the flex layout protocol in an axis-agnostic manner.
-* `Row` is identical to `Flex` with a default axis of `Axis.horizontal`.
-* `Column` is identical to `Flex` with a default axis of `Axis.vertical`.
-* `Flexible` is the base class for `Expanded`. It is a parent data widget that alters its child’s flex value. Its default fit is `FlexFit.loose`, which causes its child to be laid out with loose constraints
-* `Expanded` is identical to `Flexible` with a default fit of `FlexFit.tight`. Consequently, it passes tight constraints to its children, requiring them to fill all available space.
+* Flex is the base class for `Row` and `Column`. It implements the flex layout protocol in an axis-agnostic manner.
+* Row is identical to `Flex` with a default axis of `Axis.horizontal`.
+* Column is identical to `Flex` with a default axis of `Axis.vertical`.
+* Flexible is the base class for `Expanded`. It is a parent data widget that alters its child’s flex value. Its default fit is `FlexFit.loose`, which causes its child to be laid out with loose constraints
+* Expanded is identical to `Flexible` with a default fit of `FlexFit.tight`. Consequently, it passes tight constraints to its children, requiring them to fill all available space.
 
 ## How are flex-based containers laid out?
 
