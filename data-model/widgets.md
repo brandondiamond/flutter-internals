@@ -1,6 +1,5 @@
 # Widgets
 
-
 ## What are the widget building blocks?
 
 * The main entry points are `RenderObjectWidget`, `StatefulWidget`, and `StatelessWidget`. Widgets that export data to one or more descendant widgets \(via notifications or another mechanism\) utilize `ProxyWidget` or its subclasses, `InheritedWidget` and `ParentDataWidget`. 
