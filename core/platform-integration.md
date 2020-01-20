@@ -1,5 +1,5 @@
 ---
-description: TODO
+description: `TODO`
 ---
 
 # Platform Integration
@@ -7,7 +7,7 @@ description: TODO
 
 ## How does Flutter interact with the system clipboard?
 
-* Clipboard and ClipboardData
+* Clipboard and `ClipboardData`
 
 ## How does Flutter interact with the host system?
 
@@ -21,6 +21,6 @@ description: TODO
 ## What are service extensions?
 
 
-## What are SystemChannels?
+## What are `SystemChannels`?
 
 
