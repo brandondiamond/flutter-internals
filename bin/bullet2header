@@ -1,0 +1,7 @@
+#!/bin/bash
+TMP=`mktemp`
+for f in $(find . -name '*.md'); do
+  # Replace all top-level bullets with H1s, wrap with newlines, and demote bullets.
+  sed -e $'/^\*/s/^\*\(.*\)$/\\\n##\\1\\\n/' -e '/\s*\*/s/^  //' "$f" > "$TMP"
+  mv "$TMP" "$f"
+done
