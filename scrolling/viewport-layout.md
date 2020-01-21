@@ -1,5 +1,4 @@
-# Viewport `Layout`
-
+# Viewport Layout
 
 ## How does a viewport layout its children?
 
@@ -96,7 +95,7 @@
     * `maxPaintOffset`: update if the farthest pixel painted by this sliver \(the effective layout offset increased by `SliverGeometry.paintExtent`\) exceeds the previous maximum.
     * `scrollOffset`: decrease by the scroll extent of the sliver. Unlike `sliverScrollOffset`, which is clamped at zero, this quantity is permitted to become negative \(representing the proportion of total scroll extent after the viewport’s leading edge\).
     * `layoutOffset`: increase by the layout extent of the sliver. Layout extent must be less than paint extent, which itself must be less than remaining paint extent. Thus, only those slivers consuming space in the visible viewport will increase layout offset.
-    * Out of band data is updated to reflect the total forward and reverse scroll extent encountered so far \(`_maxScrollExtent` and `_minScrollExtent`, respectively\), as well as whether clipping is needed \(`_hasVisualOverflow`).
+    * Out of band data is updated to reflect the total forward and reverse scroll extent encountered so far \(`_maxScrollExtent` and `_minScrollExtent`, respectively\), as well as whether clipping is needed \(`_hasVisualOverflow`\).
   * Update cache state to if any cache was consumed \(i.e., `SliverGeometry.cacheExtent` &gt; 0\).
     * `remainingCacheExtent`: reduce the cacheable extent by the number of pixels that were either consumed or unreachable due to preceding the sliver’s leading edge \(`cacheExtentCorrection`\).
     * `cacheOrigin`: if the leading cacheable extent has not been exhausted, update the origin to point to the next eligible pixel; this offset must be negative. Otherwise, set the cache origin to zero. Subsequent slivers may still attempt to fill the trailing cacheable extent if space permits.
@@ -116,7 +115,7 @@
   * `RenderShrinkWrappingViewport.performLayout` is the entrypoint to viewport layout, repeating layout until there are no offset corrections and final dimensions are deemed valid.
     * If there are no children, the viewport expands to fill the cross axis, but is as small as possible in the main axis; it then returns. Else, the extents are initialized to be as big as the constraints permit.
     * Layout is attempted \(`RenderShrinkWrappingViewport._attemptLayout`\) using the unadulterated viewport offset \(`ViewportOffset.pixels`\). Any center offset adjustment is ignored. If layout produces a scroll offset correction, that correction is applied, and layout reattempted.
-    * Effective extent is computed by clamping the maximum extent needed to paint all children \(`_shrinkWrapExtent`) to the incoming constraints.
+    * Effective extent is computed by clamping the maximum extent needed to paint all children \(`_shrinkWrapExtent`\) to the incoming constraints.
     * Final layout dimensions \(inner and outer\) are verified. If either would invalidate the viewport offset \(`ViewportOffset.pixels`\), layout must be reattempted.
       * The outer dimension is set to the effective extent and verified via `ViewportOffset.applyViewportDimensions`.
       * The inner dimension is verified via `ViewportOffset.applyContentDimensions`, which requires “slack” values representing how far before and after the zero offset the viewport can scroll. Since there are no reverse slivers, the minimum extent is zero. The maximum extent is the difference between the total scrollable extent and the total paintable extent of all children \(clamped to zero\). That is, how much additional scrolling is needed even after all children are painted.

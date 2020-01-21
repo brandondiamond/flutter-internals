@@ -1,6 +1,5 @@
 # Scrollable
 
-
 ## What are the building blocks of scrolling?
 
 * Scrollable provides the interaction model for scrolling without specifying how the actual viewport is managed \(a `ViewportBuilder` must be provided\). UI concerns are customized directly or via an inherited `ScrollConfiguration` that exposes an immutable `ScrollBehavior` instance. This instance is used to build platform-specific chrome \(i.e., a scrolling indicator\) and provides ambient `ScrollPhysics`, a class that describes how scrolling UI will respond to user gestures.
@@ -41,7 +40,7 @@
 
 ## How is scrolling behavior and state managed?
 
-*  `The` `ScrollPosition` writes the current scroll offset to `PageStorage` if `ScrollPosition.keepScrollOffset` is true.
+* `The` `ScrollPosition` writes the current scroll offset to `PageStorage` if `ScrollPosition.keepScrollOffset` is true.
 
 ## How are the scrollable, the viewport, and any contained slivers associated?
 

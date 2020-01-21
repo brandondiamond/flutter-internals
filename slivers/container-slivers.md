@@ -1,5 +1,4 @@
-# Container `Slivers`
-
+# Container Slivers
 
 ## How do slivers with multiple children manage parent data?
 

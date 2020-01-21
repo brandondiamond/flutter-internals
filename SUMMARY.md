@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Introduction](README.md)
+* [Get Involved ❗](get-involved.md)
 
 ## 🏭Core
 
@@ -29,19 +30,6 @@
 * [Gestures](interaction/gestures.md)
 * [Focus](interaction/focus.md)
 
-## 📜Scrolling
-
-* [Scrollable](scrolling/scrollable.md)
-* [Viewports](scrolling/viewports.md)
-* [Viewport Layout](scrolling/viewport-layout.md)
-
-## 🥒Slivers
-
-* [Sliver Model](slivers/sliver-model.md)
-* [Persistent Headers](slivers/persistent-headers.md)
-* [Container Slivers](slivers/container-slivers.md)
-* [Dynamic Slivers](slivers/dynamic-slivers.md)
-
 ## 🎥Animation
 
 * [Animation](animation/animation.md)
@@ -56,6 +44,19 @@
 * [Text Rendering](text/text-rendering.md)
 * [Text Input](text/text-input.md)
 * [Text Editing](text/text-editing.md)
+
+## 📜Scrolling
+
+* [Scrollable](scrolling/scrollable.md)
+* [Viewports](scrolling/viewports.md)
+* [Viewport Layout](scrolling/viewport-layout.md)
+
+## 🥒Slivers
+
+* [Sliver Model](slivers/sliver-model.md)
+* [Persistent Headers](slivers/persistent-headers.md)
+* [Container Slivers](slivers/container-slivers.md)
+* [Dynamic Slivers](slivers/dynamic-slivers.md)
 
 ## 📱User Interface
 

@@ -1,6 +1,5 @@
 # Viewports
 
-
 ## What are the general viewport building blocks?
 
 * `ViewportOffset` is an interface that tracks the current scroll offset \(`ViewportOffset.pixels`\) and direction \(`ViewportOffset.userScrollDirection`, which is relative to the positive axis direction, ignoring growth direction\); it also offers a variety of helpers \(e.g., `ViewportOffset.animateTo`\). The offset represents how much content has been scrolled off screen, or more precisely, the number of logical pixels by which all children have been shifted opposite the viewport’s scrolling direction \(`Viewport.axisDirection`\). For a web page, this would be how many pixels of content are above the browser’s viewport. This interface is implemented by `ScrollPosition`, tying together viewports and scrollables. Pixels can be negative when scrolling before the center sliver. \[?\]

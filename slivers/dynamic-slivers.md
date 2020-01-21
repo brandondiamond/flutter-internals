@@ -1,5 +1,4 @@
-# Dynamic `Slivers`
-
+# Dynamic Slivers
 
 ## What are a few common types of dynamic slivers?
 
