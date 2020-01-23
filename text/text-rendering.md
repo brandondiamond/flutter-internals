@@ -1,5 +1,4 @@
-# Text `Rendering`
-
+# Text Rendering
 
 ## What are the building blocks of a font?
 

@@ -1,5 +1,4 @@
-# Text `Input`
-
+# Text Input
 
 ## How are key events sent from the keyboard?
 

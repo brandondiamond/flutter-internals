@@ -1,6 +1,5 @@
 # Painting
 
-
 ## What are the painting building blocks?
 
 * Path describes a sequence of potentially disjoint movements on a plane. Paths tracks a current point as well as one or more subpaths \(created via `Path.moveTo`\). Subpaths may be closed \(i.e., the first and last points are coincident\), open \(i.e., the first and last points are distinct\), or self intersecting \(i.e., movements within the path intersect\). Paths incorporate lines, arcs, beziers, and more; each operation begins at the current point and, once complete, defines the new current point. The current point begins at the origin. Paths can be queried \(via `Path.contains`\), transformed \(via `Path.transform`\), and merged \(via `Path.combine`, which accepts a `PathOperation`\).

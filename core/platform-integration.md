@@ -2,8 +2,7 @@
 description: TODO
 ---
 
-# Platform `Integration`
-
+# Platform Integration
 
 ## How does `Flutter` interact with the system clipboard?
 
@@ -11,16 +10,11 @@ description: TODO
 
 ## How does `Flutter` interact with the host system?
 
-
 ## How are device dimensions \(insets, padding, overlays\) conveyed?
-
 
 ## How are device configurations \(resolution, orientation\) conveyed?
 
-
 ## What are service extensions?
 
-
 ## What are `SystemChannels`?
-
 

@@ -13,9 +13,9 @@
 
 ## 🌳Data Model
 
-* [Widgets](data-model/widgets.md)
 * [Elements](data-model/elements.md)
 * [Render Tree](data-model/render-tree.md)
+* [Widgets](data-model/widgets.md)
 * [Box Model](data-model/box-model.md)
 
 ## 🎨Rendering

@@ -1,6 +1,5 @@
 # Focus
 
-
 ## What are the focus building blocks?
 
 * `FocusManager`, stored in the `WidgetsBinding`, tracks the currently focused node and the most recent node to request focus. It handles updating focus to the new primary \(if any\) and maintaining the consistency of the focus tree by sending appropriate notifications. The manager also bubbles raw keyboard events up from the focused node and tracks the current highlight mode.

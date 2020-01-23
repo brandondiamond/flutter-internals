@@ -1,6 +1,5 @@
 # Messaging
 
-
 ## How are messages passed between the framework and platform code?
 
 * `ServicesBinding.initInstances` sets the global message handler \(`Window.onPlatformMessage`\) to `ServicesBinding.defaultBinaryMessenger`. This instance supports handler registration and message handling when messages arrive or are sent \(`BinaryMessenger.setMessageHandler`, `BinaryMessenger.handlePlatformMessage`\). It multiplexes the handler into channels using a channel name, an identifier shared by the framework and the platform.
