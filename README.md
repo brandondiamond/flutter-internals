@@ -2,7 +2,7 @@
 
 Welcome to Flutter Internals, a **community-maintained** open source book providing a guided tour through Flutter's implementation.
 
-This book is very much a living document; in fact, we'd **love your help** with grammatical fixes, technical edits, and new content.
+This book is very much a "work in progress"; in fact, we'd **love your help** with grammatical fixes, technical edits, and new content.
 
 \*\*\*\*[**Click here**](https://app.gitbook.com/invite/flutter-internals?invite=-Lz8eupmUYQGm6UH34Dq) to become a contributor.
 
@@ -14,8 +14,9 @@ This book is very much a living document; in fact, we'd **love your help** with 
 
 ## Who is the audience of this book?
 
-* Contributors seeking to ramp up on how the framework works, developers looking to build intuition about Flutter internals, anyone looking for a guided tour through the code.
-* These notes may serve as a reference for other types of learning materials \(such as a deep dive video series\).
+* These notes are most useful once you have a solid understanding of how to use Flutter \(since they describe how the interfaces actually work\).
+* This outline was written for developers looking to build intuition about Flutter internals and Flutter hackers looking to ramp up on the codebase.
+* We also hope that this book can inspire more thorough learning materials \(such as deep dive videos or long form articles\).
 
 ## Who can contribute to this book?
 

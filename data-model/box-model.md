@@ -1,4 +1,5 @@
-# Box Model
+# Box `Model`
+
 
 ## What are the render box building blocks?
 
@@ -15,7 +16,7 @@
 * `BoxHitTestResult` is an aggregator that collects the entries associated with a single hit test query. `BoxHitTestResult` includes several box-specific helpers, i.e., `BoxHitTestResult.addWithPaintOffset`, `BoxHitTestResult.addWithPaintTransform`, etc.
 * `BoxHitTestEntry` represents a box that was hit during hit testing. It captures the position of the collision in local coordinates \(`BoxHitTestEntry.localPosition`\).
 
-## What are the render box tree building blocks?
+## What are the render box tree building blocks? 
 
 * `RenderProxyBox` supports a single `RenderBox` child, delegating all methods to said child. `RenderShiftedBox` is identical, but offsets the child using `BoxParentData.offset` and requires a layout implementation. Both are built with `RenderObjectWithChildMixin`.
 * `RenderObjectWithChildMixin` and `ContainerRenderObjectMixin` can both be used with a type argument of `RenderBox`. The `ContainerRenderObjectMixin` accepts a parent data type argument, as well; `ContainerBoxParentData` satisfies the type constraints and supports box parent data.

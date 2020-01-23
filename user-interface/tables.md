@@ -1,5 +1,6 @@
 # Tables
 
+
 ## How is table layout described?
 
 * `TableColumnWidth` describes the width of a single column in a `RenderTable`. Implementations can produce a flex factor for the column \(via `TableColumnWidth.flex`, which may iterate over every cell\) as well as a maximum and minimum intrinsic width \(via `TableColumnWidth.maxIntrinsicWidth` and `TableColumnWidth.minIntrinsicWidth`, which also have access to the incoming maximum width constraint\). Intrinsic dimensions are expensive to compute since they typically visit the entire subtree for each cell in the column. Subclasses implement a subset of these methods to provide different mechanisms for sizing columns.

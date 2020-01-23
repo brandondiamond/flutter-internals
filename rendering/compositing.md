@@ -1,5 +1,6 @@
 # Compositing
 
+
 ## How are composited visuals represented?
 
 * Scene is an opaque, immutable representation of composited UI. Each frame, the rendering pipeline produces a scene that is uploaded to the engine for rasterization via `Window.render`. A scene can also be rasterized into an `Image` via `Scene.toImage`. Generally, a `Scene` encapsulates a stack of rendering operations \(e.g., clips, transforms, effects\) and graphics \(e.g., pictures, textures, platform views\).
@@ -59,7 +60,7 @@
 
 ## How are “needs compositing” bits updated?
 
-* `RenderObject.markNeedsCompositingBitsUpdate` marks a render object as requiring a compositing bit update \(via `PipelineOwner`. `_nodesNeedingCompositingBitsUpdate`\). If a node is marked dirty, all of its ancestors are marked dirty, too. As an optimization, this walk may be cut off if the current node or the current node’s parent is a repaint boundary \(or the parent is already marked dirty\).
+* `RenderObject.markNeedsCompositingBitsUpdate` marks a render object as requiring a compositing bit update \(via `PipelineOwner`. `_nodesNeedingCompositingBitsUpdate`). If a node is marked dirty, all of its ancestors are marked dirty, too. As an optimization, this walk may be cut off if the current node or the current node’s parent is a repaint boundary \(or the parent is already marked dirty\).
   * If a node’s compositing bits need updating, it’s possible that it will now introduce a new layer \(i.e., it will need compositing\). If so, all ancestors will need compositing, too, since they may paint a descendent that introduces a new layer. As described, certain non-local effects will need to be implemented via compositing.
   * The walk may be cut off at repaint boundaries since all ancestors must already have been marked as needing compositing.
   * Adding or removing children \(via `RenderObject.adoptChild` and `RenderObject.dropChild`\) might alter the compositing requirements of the render tree. Similarly, changing the `RenderObject.alwaysNeedsCompositing` bits would require that the bits be updated.

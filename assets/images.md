@@ -1,5 +1,8 @@
 # Images
 
+
+
+
 ## How are images represented?
 
 * At the lowest level, images are represented as a `Uint8List` \(i.e., an opaque list of unsigned bytes\). These bytes can be expressed in any number of image formats, and must be decoded to a common representation by a coded.
@@ -52,7 +55,7 @@
     * A `JSON`-encoded asset manifest is produced from the pubspec file during building. This manifest is parsed to locate variants of each asset according to the scheme described above; from this list, the variant nearest the current pixel ratio is identified. A key is produced using this asset’s scale \(which may not match the device’s pixel ratio\), its fully qualified name, and the bundle that was used. The completer is configured by the superclass.
     * The equality operator is overridden such that only the unresolved asset name and bundle are consulted; scale \(and the best fitting asset name\) are excluded from the comparison.
 * `ResizeImage` wraps another `ImageProvider` to support size-aware caching. Ordinarily, images are decoded using their intrinsic dimensions \(via `instantiateImageCodec`\); consequently, the version of the image stored in the `ImageCache` corresponds to the full size image. This is inefficient for images that are displayed at a different size. `ResizeImage` addresses this by augmenting the underlying key with the requested dimensions; it also applies a `DecoderCallback` that forwards these dimensions via `instantiateImageCodec`. 
-  * The first time an image is provided, it is loaded using the underlying provider \(via `ImageProvider.load`, which doesn’t update the cache\). The resulting `ImageStreamCompleter` is cached using the `ResizeImage`’s key \(i.e., `_SizeAwareCacheKey`\).
+  * The first time an image is provided, it is loaded using the underlying provider \(via `ImageProvider.load`, which doesn’t update the cache\). The resulting `ImageStreamCompleter` is cached using the `ResizeImage`’s key \(i.e., `_SizeAwareCacheKey`).
   * Subsequent accesses will hit the cache, which returns an image with the corresponding dimensions. Usages with different dimensions will result in additional entries being added to the cache.
 
 ## What are the building blocks for image rendering?

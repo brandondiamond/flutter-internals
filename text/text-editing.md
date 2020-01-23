@@ -1,4 +1,5 @@
-# Text Editing
+# Text `Editing`
+
 
 ## What data structures support editable text?
 
@@ -19,9 +20,9 @@
 * `TextSelectionGestureDetector` is a stateful widget that recognizes a sequence of selection-related gestures \(e.g., a tap followed by a double tap\), unlike a typical detector which recognizes just one. The text field \(e.g., `TextField`\) incorporates the gesture detector when building the corresponding UI.
   * `_TextSelectionGestureDetectorState` coordinates the text editing gesture detectors, multiplexing them as described above. A map of recognizer factories is assembled and assigned callbacks \(via `GestureRecognizerFactoryWithHandlers`\) given the widget’s configuration. These are passed to a `RawGestureDetector` widget which constructs the recognizers as needed.
   * `_TransparentTapGestureRecognizer` is a `TapGestureRecognizer` capable of recognizing while ceding to other recognizers in the arena. Thus, the same tap may be handled by multiple recognizers. This is particularly useful since selection handles tend to overlap editable text; a single tap in the overlap region is generally processed by the selection handle, whereas a double tap is processed by the editable text.
-  * `TextSelectionGestureDetectorBuilderDelegate` provides a hook for customizing the interaction model \(typically implemented by the text field, e.g., `_CupertinoTextFieldState`, `_TextFieldState`\). The delegate also exposes the `GlobalKey` associated with the underlying `EditableTextState`.
+  * `TextSelectionGestureDetectorBuilderDelegate` provides a hook for customizing the interaction model \(typically implemented by the text field, e.g., `_CupertinoTextFieldState`, `_TextFieldState`). The delegate also exposes the `GlobalKey` associated with the underlying `EditableTextState`.
   * `TextSelectionGestureDetectorBuilder` configures a `TextSelectionGestureDetector` with sensible defaults for text editing. The delegate is used to obtain a reference to the editable text and to customize portions of the interaction model.
-  * Platform-specific text fields extend `TextSelectionGestureDetectorBuilder` to provide idiomatic interaction models \(e.g., `_TextFieldSelectionGestureDetectorBuilder`\).
+  * Platform-specific text fields extend `TextSelectionGestureDetectorBuilder` to provide idiomatic interaction models \(e.g., `_TextFieldSelectionGestureDetectorBuilder`).
 
 ## How can editable behavior be customized?
 
@@ -72,7 +73,10 @@
 
 ## How does the editable retain state in response to platform lifecycle events?
 
+
 ## What is the best way to manage input via forms?
 
+
 ## `IME` \(input method editor\)?
+
 
