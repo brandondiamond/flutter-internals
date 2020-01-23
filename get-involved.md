@@ -1,6 +1,6 @@
 # Get Involved ❗
 
-This book is a community effort with the singular goal of shining a light on how Flutter actually works.
+This book is a community effort that aims to explain how Flutter actually works in an intuitive, but brief, way.
 
 Given the breadth and scope of the framework, there's a lot of material to cover and a lot of material to review. Suffice to say: **we need your help!**
 
@@ -8,10 +8,10 @@ Any and all contributions are much appreciated. Keep on reading for ways to get 
 
 ### Ways to contribute
 
-* Copy editing and structural improvements
-* Fact checking, corrections, and technical revisions
-* Expanding sections that are incomplete or outdated
-* Adding new sections or topics
+* Copy editing and structural improvements.
+* Fact checking, corrections, and technical revisions.
+* Expanding sections that are incomplete or outdated.
+* Adding new sections or topics.
 * ... or however you think would be helpful!
 
 ### How to contribute
