@@ -19,7 +19,8 @@ Any and all contributions are much appreciated. Keep on reading for ways to get 
 * Use our [**invite link**](https://app.gitbook.com/invite/flutter-internals?invite=-Lz8eupmUYQGm6UH34Dq) to join as a contributor.
   * Once you've joined, you'll be able to comment, edit, and review.
 * Start editing! \(If adding a new section, please be mindful to mark it as "Work in Progress"\).
-* See the "Project status" section below for pointers to areas needing attention.
+* See the "[Project status](get-involved.md#project-status)" section for pointers to areas needing attention.
+* Add your name to the "[Authors](get-involved.md#authors)" section so you get the credit you deserve!
 
 ## Project status
 
