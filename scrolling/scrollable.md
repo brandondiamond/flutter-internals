@@ -2,7 +2,7 @@
 
 ## What are the building blocks of scrolling?
 
-* Scrollable provides the interaction model for scrolling without specifying how the actual viewport is managed \(a `ViewportBuilder` must be provided\). UI concerns are customized directly or via an inherited `ScrollConfiguration` that exposes an immutable `ScrollBehavior` instance. This instance is used to build platform-specific chrome \(i.e., a scrolling indicator\) and provides ambient `ScrollPhysics`, a class that describes how scrolling UI will respond to user gestures.
+* `Scrollable` provides the interaction model for scrolling without specifying how the actual viewport is managed \(a `ViewportBuilder` must be provided\). UI concerns are customized directly or via an inherited `ScrollConfiguration` that exposes an immutable `ScrollBehavior` instance. This instance is used to build platform-specific chrome \(i.e., a scrolling indicator\) and provides ambient `ScrollPhysics`, a class that describes how scrolling UI will respond to user gestures.
 * `ScrollPhysics` is consulted throughout the framework to construct physics simulations for ballistic scrolling, to validate and adjust user interaction, to manage momentum across interactions, and to identify overscroll regions.
 * `ScrollableState` connects the `Scrollable` to a `ScrollPosition` via a `ScrollController`. This controller is responsible for producing the `ScrollPosition` from a given `ScrollContext` and `ScrollPhysics`; it also provides the `initialScrollOffset`.
   * For example, `PageView` injects a page-based scrolling mechanism by having its `ScrollController` \(`PageController`\) return a custom scroll position subclass.

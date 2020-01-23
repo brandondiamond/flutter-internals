@@ -121,12 +121,12 @@
       * The inner dimension is verified via `ViewportOffset.applyContentDimensions`, which requires “slack” values representing how far before and after the zero offset the viewport can scroll. Since there are no reverse slivers, the minimum extent is zero. The maximum extent is the difference between the total scrollable extent and the total paintable extent of all children \(clamped to zero\). That is, how much additional scrolling is needed even after all children are painted.
     * Last, the viewport is sized to match its effective extent, clamped by the incoming constraints.
   * `RenderShrinkWrappingViewport._attemptLayout` is a thin wrapper around `RenderViewportBase.layoutChildSequence` that configures the layout parameters passed to the first child in the sequence.
-    * child: the first child, since there are no reverse slivers.
+    * `child`: the first child, since there are no reverse slivers.
     * `scrollOffset`: incoming offset, clamped above zero \(i.e., the amount the viewport is scrolled\).
     * `scrollOffset`: incoming offset, clamped below zero \(i.e., the amount the viewport is over-scrolled\).
     * `layoutOffset`: always zero.
     * `remainingPaintExtent`: the main axis extent \(i.e., the full viewport\)
-    * advance: `childAfter` to iterate forwards.
+    * `advance`: `childAfter` to iterate forwards.
     * `remainingCacheExtent`: the main axis extent plus two cache extents.
     * `cacheOrigin`: `cacheExtent` pixels before the layout offset.
 
