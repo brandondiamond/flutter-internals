@@ -2,6 +2,7 @@
 
 * [Introduction](README.md)
 * [Get Involved ❗](get-involved.md)
+* [Learning Path](learning-path.md)
 
 ## 🏭Core
 
