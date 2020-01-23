@@ -9,7 +9,7 @@
 * `Viewport` is a layout widget that is larger on the inside. The viewport is associated with a scroll offset \(`ViewportOffset`\), an interface that is implemented by `ScrollPosition` and typically fulfilled by `ScrollPositionWithSingleContext`. As the user scrolls, this offset is propagated to descendant slivers via layout. Finally, slivers are repainted at their new offsets, creating the visual effect of scrolling.
 * `ShrinkWrappingViewport` is a variant of viewport that sizes itself to match its children in the main axis \(instead of expanding to fill the main axis\).
 * `NestedScrollViewViewport` is a specialized viewport used by `NestedScrollView` to coordinate scrolling across two viewports \(supported by auxiliary widgets like `SliverOverlapAbsorberHandle`\).
-* `ScrollView` couples a viewport with a scrollable, deferring to its subclass to provide slivers; as such, the `ScrollView` provides a foundation for building scrollable UI. `CustomScrollView` accepts an arbitrary sliver list whereas `BoxScrollView` -- and its subclasses `ListView` and `GridView` -- apply a single layout model \(e.g., list or grid\) to a collection of slivers.
+* `ScrollView` couples a viewport with a scrollable, delegating to its subclass to provide slivers; as such, the `ScrollView` provides a foundation for building scrollable UI. `CustomScrollView` accepts an arbitrary sliver list whereas `BoxScrollView` -- and its subclasses `ListView` and `GridView` -- apply a single layout model \(e.g., list or grid\) to a collection of slivers.
 
 ## What are the viewport rendering building blocks?
 
