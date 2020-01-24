@@ -1,6 +1,5 @@
 # Painting
 
-
 ## What are the painting building blocks?
 
 * Path describes a sequence of potentially disjoint movements on a plane. Paths tracks a current point as well as one or more subpaths \(created via `Path.moveTo`\). Subpaths may be closed \(i.e., the first and last points are coincident\), open \(i.e., the first and last points are distinct\), or self intersecting \(i.e., movements within the path intersect\). Paths incorporate lines, arcs, beziers, and more; each operation begins at the current point and, once complete, defines the new current point. The current point begins at the origin. Paths can be queried \(via `Path.contains`\), transformed \(via `Path.transform`\), and merged \(via `Path.combine`, which accepts a `PathOperation`\).
@@ -24,6 +23,6 @@
     * Any lines that are drawn will be capped at their endpoints according to a `StrokeCap` value \(via `Paint.strokeCap`; `StrokeCap.butt` is the default and does not paint a cap\). Caps extend the overall length of lines in proportion to the stroke width.
     * Discrete segments are joined according to a `StrokeJoin` value \(via `Paint.strokeJoin`; `StrokeJoin.miter` is the default and extends the original line such that the next can be drawn directly from it\). A limit may be specified to prevent the original line from extending too far \(via `Paint.strokeMiterLimit`; once exceeded, the join reverts to `StrokeJoin.bevel`\).
   * `ColorFilter` describes a function mapping from two input colors \(e.g., the paint’s color and the destination’s color\) to a final output color \(e.g., the final composited color\). If a `ColorFilter` is provided, it overrides both the paint color and shader; otherwise, the shader overrides the color.
-  * `MaskFilter` applies a filter \(e.g., a blur\) to the drawing once it is complete but before it is composited. Currently, this is limited to a gaussian blur.
+  * `MaskFilter` applies a filter \(e.g., a blur\) to the drawing once it is complete but before it is composited. Currently, this is limited to a Gaussian blur.
 * Shader is a handle to a `Skia` shader utilized by the engine. Several are exposed within the framework, including `Gradient` and `ImageShader`. These are analogous, with the former generating pixels by smoothly blending colors and the latter reading them directly from an image. Both support tiling so that the original pixels can be extended beyond their bounds \(a different `TileMode` may be specified in either direction\); `ImageShader` also supports an arbitrary matrix to be applied to the source image.
 
