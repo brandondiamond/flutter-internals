@@ -1,9 +1,8 @@
 ---
-description: '`TODO`: `Expand`.'
+description: 'TODO: Expand.'
 ---
 
 # Gestures
-
 
 ## How are hit tests performed?
 

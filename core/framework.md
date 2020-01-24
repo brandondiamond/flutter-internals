@@ -2,9 +2,6 @@
 
 ## How is the app bootstrapped?
 
-
-## How is the app bootstrapped?
-
 * `runApp` kicks off binding initialization by invoking the `WidgetsFlutterBinding`/`RenderingFlutterBinding.ensureInitialized` static method. This calls each binding’s `initInstances` method, allowing each to initialize in turn.
   * This flow is built using mixin chaining: each of the concrete bindings \(e.g., `WidgetsFlutterBinding`\) extends `BaseBinding`, the superclass constraint shared by all binding mixins \(e.g., `GestureBinding`\). Consequently, common methods \(like `BaseBinding.initInstances`\) can be chained together via super invocations. These calls are linearized from left-to-right, starting with the superclass and proceeding sequentially through the mixins; this strict order allows later bindings to depend on earlier ones \[?\].
 * `RendererBinding.initInstances` creates the `RenderView`, passing an initial `ViewConfiguration` \(describing the size and density of the render surface\). It then prepares the first frame \(via `RenderView.prepareInitialFrame`\); this schedules the initial layout and initial paint \(via `RenderView.scheduleInitialLayout` and `RenderView.scheduleInitialPaint`; the latter creates the root layer, a `TransformLayer`\). This marks the `RenderView` as dirty for layout and painting but does not actually schedule a frame.

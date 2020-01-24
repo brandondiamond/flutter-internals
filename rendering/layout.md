@@ -1,6 +1,5 @@
 # Layout
 
-
 ## How is layout optimized \(what are relayout boundaries\)?
 
 * If a child is not dirty and the constraints are unchanged, it needn’t be laid out, cutting off the walk.
