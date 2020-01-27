@@ -2,7 +2,7 @@
 
 ## How are images represented?
 
-* At the lowest level, images are represented as a `Uint8List` \(i.e., an opaque list of unsigned bytes\). These bytes can be expressed in any number of image formats, and must be decoded to a common representation by a coded.
+* At the lowest level, images are represented as a `Uint8List` \(i.e., an opaque list of unsigned bytes\). These bytes can be expressed in any number of image formats, and must be decoded to a common representation by a codec.
 * `instantiateImageCodec` accepts a list of bytes and returns the appropriate codec from the engine already bound to the provided image. This function accepts an optional width and height; if these do not match the image’s intrinsic size, the image is scaled accordingly. If only one dimension is provided, the other dimension remains the intrinsic dimension. `PaintingBinding.instantiateImageCodec` provides a thin wrapper around this function with the intention of eventually supporting additional processing.
 * Codec represents the application of a codec on a pre-specified image array. Codecs process both single frames and animated images. Once the `Codec` is retrieved via `instantiateImageCodec`, the decoded `FrameInfo` \(which contains the image\) may be requested via `Codec.nextFrame`; this may be invoked repeatedly for animations, and will automatically wrap to the first frame. The `Codec` must be disposed when no longer needed \(the image data remains valid\).
 * `DecoderCallback` provides a layer of indirection between image decoding \(via the `Codec` returned by `instantiateImageCodec`\) and any additional decoding necessary for an image \(e.g., resizing\). It is primarily used with `ImageProvider` to encapsulate decoding-specific implementation details.
