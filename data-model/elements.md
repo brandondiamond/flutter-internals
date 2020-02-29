@@ -46,6 +46,9 @@
 
 ## How are components managed by `ComponentElement`?
 
+* Building is an alternative to storing a static list of children in a widget \(even though this can be somewhat dynamic if the list is mutated in response to events\).
+* Instead, a method or function is invoked to dynamically produce a list of children. Flutter's reactive programming paradigm is facilitated by re-invoking such procedures any time associated state changes \(e.g., in response to events\).
+* This process is managed by marking a subtree as being "dirty" \(i.e., needing to be rebuilt\) whenever state changes. This causes each affected build method to be systematically reevaluated when the engine requests the next frame. Elements are updated using these new widgets, mutating the element tree and therefore the render tree \(and UI\).
 * `ComponentElement.build` provides a hook for producing intermediate nodes in the element tree. `StatelessElement.build` invokes the widget’s build method, whereas `StatefulElement.build` invokes the state’s build method. Mounting and updating cause rebuild to be invoked. For `StatefulElement`, a rebuild may be scheduled spontaneously via `State.setState`. In both cases, lifecycle methods are invoked in response to changes to the element tree \(for example, `StatefulElement.update` will invoke `State.didUpdateWidget`\).
 * If a component element rebuilds, the old element and new widget will still be paired, if possible. This allows `Element.update` to be used instead of `Element.inflateWidget`. Consequently, descendant render objects may be updated instead of recreated. Provided that the render object’s properties weren’t changed, this will likely circumvent the rest of the rendering process.
 
