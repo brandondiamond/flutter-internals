@@ -1,5 +1,4 @@
-# Render `Tree`
-
+# Render Tree
 
 ## What are the render object building blocks?
 
