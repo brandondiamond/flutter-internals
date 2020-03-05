@@ -33,3 +33,17 @@
 * `Shadow` represents a single drop shadow with a color, an offset from the casting element, and a blur radius characterizing the Gaussian blur applied to the shadow.
 * `Gradient` describes one or more smooth color transitions. Gradients can be interpolated and scaled; gradients can also be used to obtain a reference to a corresponding shader. Linear, radial, and sweep gradients are supported \(via `LinearGradient`, `RadialGradient`, and `SweepGradient`, respectively\). `TileMode` determines how a gradient paints beyond its defined bounds. Gradients may be clamped \(e.g., hold their initial and final values\), repeated \(e.g., restarted at their bounds\), or mirrored \(e.g., restarted but with initial and final values alternating\).
 
+## How are tree nodes modeled?
+
+* `AbstractNode` represents a node in a tree without specifying a particular child model \(i.e., the tree's actual structure is left as an implementation detail\). Concrete implementations must call `AbstractNode.adoptChild` and `AbstractNode.dropChild` whenever the child model changes.
+  * `AbstractNode.owner` references an arbitrary object shared by all nodes in a subtree.
+    * `AbstractNode.attach` assigns an owner to the node. Adopting children will attach them automatically. Used by the owner to attach the tree via its root node.
+    * `AbstractNode.detach` clears a node's owner. Dropping children will detach them automatically. Used by the owner to detach the tree via its root node.
+    * `AbstractNode.attached` indicates whether the node is attached \(i.e., has an owner\).
+  * `AbstractNode.parent` references the parent abstract node.
+    * `AbstractNode.adoptChild` updates a child's parent and depth. The child is attached if the parent has an owner.
+    * `AbstractNode.dropChild` clears the child's parent. The child is detached if the parent has an owner.
+  * `AbstractNode.depth` is an integer that increases with depth. All depths below a given node will be greater than that node's depth. Note that values need not match the actual depth of the node.
+    * `AbstractNode.redepthChild` updates a child's depth to be greater than its parent.
+    * `AbstractNode.redepthChildren` uses the concrete child model to call `AbstractNode.redepthChild` on each child.
+
