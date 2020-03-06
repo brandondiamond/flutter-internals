@@ -3,8 +3,8 @@
 ## What are the render object building blocks?
 
 * `RenderObject` provides the basic infrastructure for managing a tree of visual elements. Render objects define a general protocol for performing layout, painting, and compositing. This protocol is largely abstract, deferring to subclasses to determine the inputs and outputs of layout, how hit testing is performed \(though all render objects are `HitTestTargets`\), and how the render object hierarchy is modeled \(`RenderObject` extends `AbstractNode`, which doesn't specify a concrete child model\).
-* `Constraints` represent the immutable inputs to layout. The definition is flexible provided that constraints can indicate whether they represent a single configuration \(`Constraints.isTight`\), are the canonical representation \(`Constraints.isNormalized`\), and can be compared for equality \(via `Constraints.==` and `Constraints.hashCode`\).
-* `ParentData` represents opaque data stored in a child on behalf of its parent. By convention, this data is treated as being private to the parent and therefore should not directly influence the child's layout or painting. Parent data is flexibly defined and only includes a single method \(`ParentData.detach`, which allows the data to react to its render object being removed from the tree\).
+* `Constraints` represent the immutable inputs to layout. The definition is flexible provided that constraints can indicate whether they represent a single configuration \(`Constraints.isTight`\), are expressed in the canonical form \(`Constraints.isNormalized`\), and can be compared for equality \(via `Constraints.==` and `Constraints.hashCode`\).
+* `ParentData` represents opaque data stored in a child by its parent. This data is typically considered an implementation detail of the parent and should therefore not be accessed by the child. Parent data is flexibly defined and only includes a single method \(`ParentData.detach`, which allows instances to react to their render object being removed from the tree\).
 
 ## How is the render object lifecycle managed?
 
