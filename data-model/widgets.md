@@ -31,3 +31,9 @@
 * When decreasing the tree depth, the parent will once again be assigned new children which likely won't sync with old children. Thus, the new children will need to be inflated, cascading down the entire subtree.
 * Adding a `GlobalKey` to the previous child can mitigate this issue since `Element.updateChild` is able to reuse elements that are stored in the `GlobalKey` registry \(allowing that subtree to simply be reinserted instead of rebuilt\).
 
+## How do notifications work?
+
+* Notification support is not built directly into the widget abstraction, but layered on top of it.
+* `Notification` is an abstract class that searches up the element tree, visiting each `NotificationListener` subclass \(`Notification.dispatch` calls `Notification.visitAncestor`, which performs this walk\).
+* The notification invokes `NotificationListener._dispatch` on each instance along this walk. If a listener is defined for the concrete notification type, that listener is invoked. If this returns true, the walk terminates. Otherwise, the notification continues to bubble up the tree.
+
