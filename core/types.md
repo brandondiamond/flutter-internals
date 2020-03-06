@@ -38,9 +38,9 @@
 * `AbstractNode` represents a node in a tree without specifying a particular child model \(i.e., the tree's actual structure is left as an implementation detail\). Concrete implementations must call `AbstractNode.adoptChild` and `AbstractNode.dropChild` whenever the child model changes.
   * `AbstractNode.owner` references an arbitrary object shared by all nodes in a subtree.
     * `AbstractNode.attach` assigns an owner to the node. Adopting children will attach them automatically. Used by the owner to attach the tree via its root node.
-      * Subclasses should attach all children since the parent can change its attachment state at any time and must keep its children in sync.
+      * Subclasses should attach all children since the parent can change its attachment state at any time \(i.e., after the child is adopted\) and must keep its children in sync.
     * `AbstractNode.detach` clears a node's owner. Dropping children will detach them automatically. Used by the owner to detach the tree via its root node.
-      * Subclasses should detach all children since the parent can change its attachment state at any time and must keep its children in sync.
+      * Subclasses should detach all children since the parent can change its attachment state at any time \(i.e., after the child is adopted\) and must keep its children in sync.
     * `AbstractNode.attached` indicates whether the node is attached \(i.e., has an owner\).
   * `AbstractNode.parent` references the parent abstract node.
     * `AbstractNode.adoptChild` updates a child's parent and depth. The child is attached if the parent has an owner.
