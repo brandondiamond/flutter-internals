@@ -33,7 +33,7 @@
   * `ContainerRenderObjectMixin` uses this field to implement a linked list of children.
 * All `RenderObjects` implement the visitor pattern via `RenderObject.RenderObject.visitChildren` which invokes a `RenderObjectVisitor` once per child.
 
-## What is necessary when altering the child model?
+## What is necessary when adding or removing children?
 
 * When adding or removing a child, call `RenderObject.adoptChild` and `RenderObject.dropChild` respectively.
 * The parent’s `RenderObject.attach` and `RenderObject.detach` methods must call their counterpart on each child.
@@ -41,7 +41,8 @@
 
 ## What are the render tree building blocks?
 
-* `RenderObjectWithChildMixin` allocates storage for a single child within the object instance itself \(`RenderObjectWithChildMixin.child`\).
+* `RenderObjectWithChildMixin` stores a single child reference within the parent \(`RenderObjectWithChildMixin.child`\).
+  * 
 * `ContainerRenderObjectMixin` uses each child’s parent data \(which must implement `ContainerParentDataMixin`\) to build a doubly linked list via `ContainerParentDataMixin.nextSibling` and `ContainerParentDataMixin.previousSibling`.
   * A variety of container-type methods are included: `ContainerRenderObjectMixin.insert`, `ContainerRenderObjectMixin.add`, `ContainerRenderObjectMixin.move`, `ContainerRenderObjectMixin.remove`, etc.
   * These adopt, drop, attach, and detach children appropriately. Additionally, when the child list changes, `RenderObject.markNeedsLayout` is invoked \(as this may alter layout\).
