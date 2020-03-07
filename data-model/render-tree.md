@@ -6,10 +6,15 @@
 * `Constraints` represent the immutable inputs to layout. The definition is flexible provided that constraints can indicate whether they represent a single configuration \(`Constraints.isTight`\), are expressed in the canonical form \(`Constraints.isNormalized`\), and can be compared for equality \(via `Constraints.==` and `Constraints.hashCode`\).
 * `ParentData` represents opaque data stored in a child by its parent. This data is typically considered an implementation detail of the parent and should therefore not be accessed by the child. Parent data is flexibly defined and only includes a single method \(`ParentData.detach`, which allows instances to react to their render object being removed from the tree\).
 
-## How are render objects attached to the rendering pipeline?
+## How are render objects rendered?
 
 * `RendererBinding` establishes a `PipelineOwner` as part of `RendererBinding.initInstances` \(i.e., the binding’s “constructor”\). The pipeline owner serves as the render tree's `AbstractNode.owner` \(set by `AbstractNode.attach` and propagated by `AbstractNode.adoptChild`\).
 * `PipelineOwner` is analogous to the `BuildOwner`, tracking which render objects need compositing bits, layout, painting, or semantics updates. Objects mark themselves as being dirty by adding themselves to specific lists \(e.g.,`PipelineOwner._nodesNeedingLayout`, `PipeplineOwner._nodesNeedingPaint`\). All dirty objects are later cleaned by a corresponding “flush” method \(e.g, `PipelineOwner.flushLayout`, `PipelineOwner.flushPaint`\). These methods initiate the corresponding rendering process and are invoked every frame as needed \(via `RendererBinding.drawFrame` and `WidgetsBinding.drawFrame`\).
+  * Rendering takes place by flushing dirty render objects in a specific sequence:
+    * `PipelineOwner.flushLayout` lays out all dirty render objects \(laying out dirty children recursively based on the `RenderObject.performLayout` implementation\).
+    * `PipelineOwner.flushCompositingBits` updates a cache used to indicate whether descendant render objects create new layers. If so, because painting is often interlaced \(i.e., a render object paints before and after its children\), certain operations may need to be implemented differently. If all descendants paint into the same layer, an operation \(like clipping\) can be performed using a single painting context. If not, some effects can only be achieved by inserting new layers. These bits determine which option will be used when painting.
+    * `PipelineOwner.flushPaint` paints all dirty render objects \(painting dirty render objects recursively, based on the `RenderObject.paint` implementation\).
+    * `PipelineOwner.flushSemantics` compiles semantic data for all dirty render objects.
 * Whenever an object marks itself dirty, it will generally also invoke `PipelineOwner.requestVisualUpdate` to schedule a frame and eventually update the user interface. Requesting a visual update invokes the visual update handler that was bound when the `PipelineOwner` was constructed by `RendererBinding` \(`PipelineOwner.onNeedVisualUpdate`\) 
 * The default handler invokes`RendererBinding.ensureVisualUpdate` which schedules a frame \(via`SchedulerBinding.scheduleFrame`\) if it's not possible to apply the visual update during the current frame \(e.g., during post frame callbacks\). 
 * When a render object is attached to the `PipelineOwner` \(via `RenderObject.attach`\), it adds itself to all relevant dirty lists \(e.g., `RenderObject.markNeedsLayout`, `RenderObject.markNeedsPaint`\).
@@ -41,18 +46,36 @@
 
 ## What are the render tree building blocks?
 
-* `RenderObjectWithChildMixin` stores a single child reference within the parent \(`RenderObjectWithChildMixin.child`\).
-  * 
-* `ContainerRenderObjectMixin` uses each child’s parent data \(which must implement `ContainerParentDataMixin`\) to build a doubly linked list via `ContainerParentDataMixin.nextSibling` and `ContainerParentDataMixin.previousSibling`.
-  * A variety of container-type methods are included: `ContainerRenderObjectMixin.insert`, `ContainerRenderObjectMixin.add`, `ContainerRenderObjectMixin.move`, `ContainerRenderObjectMixin.remove`, etc.
+* `RenderObjectWithChildMixin` stores a single child reference within a render object.
+  * A child setter \(`RenderObjectWithChildMixin.child`\) adopts and drops the child as appropriate \(i.e., when adding and removing a child\).
+  * Updating the child marks the render object as needing layout and therefore painting.
+  * Attaching, detaching, recomputing depths, and iterating are overridden to incorporate the child.
+* `ContainerRenderObjectMixin` uses each child’s parent data \(which must implement `ContainerParentDataMixin`\) to maintain a doubly linked list of children \(via `ContainerParentDataMixin.nextSibling` and `ContainerParentDataMixin.previousSibling`\).
+  * The underlying linked list supports insertions and removals \(via `ContainerParentDataMixin._insertIntoChildList` and `ContainerParentDataMixin._removeFromChildList`\). Insertions can be positional using an optional preceding child argument.
+  * A variety of container-type methods are exposed \(e.g., `ContainerRenderObjectMixin.insert`, `ContainerRenderObjectMixin.add`, `ContainerRenderObjectMixin.move`, `ContainerRenderObjectMixin.remove`\). These adopt and drop children as needed. A move operation is provided to avoid unnecessarily dropping and re-adopting a child.
+  * Updating \(or reordering\) the child list marks the render object as needing layout and therefore painting.
   * These adopt, drop, attach, and detach children appropriately. Additionally, when the child list changes, `RenderObject.markNeedsLayout` is invoked \(as this may alter layout\).
+  * Attaching, detaching, recomputing depths, and iterating are overridden to incorporate all children.
+  * The first child \(`ContainerRenderObjectMixin.firstChild`\), last child \(`ContainerRenderObjectMixin.lastChild`\), and total number of children \(`ContainerRenderObjectMixin.childCount`\) is accessible via the render object.
 
 ## How do render objects manage layout?
 
-* When a render object has been marked as dirty via `RenderObject.markNeedsLayout`, `RenderObject.layout` will be invoked with constraints as input and a size as output. Both the constraints and the size are implementation-dependent; the constraints must implement `Constraints` whereas the size is entirely arbitrary.
-* If a parent depends on the child’s geometry, it must pass the `parentUsesSize` argument to layout. The implementation of `RenderObject.markNeedsLayout` / `RenderObject.sizedByParent` will need to call `RenderObject.markParentNeedsLayout` / `RenderObject.markParentNeedsLayoutForSizedByParentChange`, respectively.
-* `RenderObjects` that solely determine their sizing using the input constraints must set `RenderObject.sizedByParent` to true and perform all layout in `RenderObject.performResize`.
-* Layout cannot depend on position \(typically stored using parent data\). The position, if applicable, is solely determined by the parent. However, some `RenderObject` subtypes may utilize additional out-of-band information when performing layout. If this information changes, and the parent used it during the last cycle, `RenderObject.markParentNeedsLayout` must be invoked.
+* Render objects mark themselves as needing layout \(via`RenderObject.markNeedsLayout`\); this schedules a layout pass during the next frame.
+* Layout is performed by `PipelineOwner.flushLayout` when the corresponding dirty list is non-empty \(`PipelineOwner._nodesNeedingLayout`\). 
+* `RenderObject.layout` is invoked with a `Constraints` subclass as input; some subclasses incorporate other out-of-band input, too. The layout method applies input to produce an arbitrary output \(generally a size, though the type is unconstrained\).
+  * If a protocol uses out-of-band input, and this input changes, the affected render objects must be marked dirty \(e.g., a parent that uses its child baseline to perform layout must repeat layout whenever the child's baseline changes\).
+* If a parent depends on the child’s layout, it must pass the `parentUsesSize` argument to layout.
+* `RenderObjects` that solely determine their sizing using the input constraints  set `RenderObject.sizedByParent` to true and perform all layout in `RenderObject.performResize`.
+* Layout cannot depend on anything other than the incoming constraints; this includes the render object's position \(which is generally determined by the parent render object and stored in `ParentData`\). 
+
+## How do render objects manage painting?
+
+* Render objects mark themselves as needing paint \(via`RenderObject.markNeedsPaint`\); this schedules a painting pass during the next frame.
+* Painting is performed by `PipelineOwner.flushPaint` when the corresponding dirty list is non-empty \(`PipelineOwner._nodesNeedingPaint`\).
+* Dirty render objects are sorted from back to front \(using `RenderObject.depth`\) then painted \(via `PaintingContext.repaintCompositedChild`\). This requires the render object to have an associated layer \(only render objects that are repaint boundaries are added to this list\).
+  * If a render object's layer isn't attached \(i.e., isn't being composited\), painting must wait until it's reattached. The framework iterates through all ancestor render objects to find the nearest repaint boundary with an attached layer \(via `RenderObject._skippedPaintingOnLayer`\). Each is marked dirty to ensure that it's eventually painted.
+* If necessary, a new `PaintingContext` is created for the render object and forwarded to `RenderObject._paintWithContext`.
+* This method ensures that layout has been performed and, if so, invokes `RenderObject.paint` with the provided context.
 
 ## How do render objects manage hit testing?
 
