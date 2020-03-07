@@ -22,8 +22,8 @@
 ## 🎨Rendering
 
 * [Layout](rendering/layout.md)
-* [Painting](rendering/painting.md)
 * [Compositing](rendering/compositing.md)
+* [Painting](rendering/painting.md)
 * [Semantics](rendering/semantics.md)
 
 ## 👆Interaction

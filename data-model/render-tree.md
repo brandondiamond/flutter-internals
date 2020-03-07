@@ -11,9 +11,9 @@
 * `RendererBinding` establishes a `PipelineOwner` as part of `RendererBinding.initInstances` \(i.e., the binding’s “constructor”\). The pipeline owner serves as the render tree's `AbstractNode.owner` \(set by `AbstractNode.attach` and propagated by `AbstractNode.adoptChild`\).
 * `PipelineOwner` is analogous to the `BuildOwner`, tracking which render objects need compositing bits, layout, painting, or semantics updates. Objects mark themselves as being dirty by adding themselves to specific lists \(e.g.,`PipelineOwner._nodesNeedingLayout`, `PipeplineOwner._nodesNeedingPaint`\). All dirty objects are later cleaned by a corresponding “flush” method \(e.g, `PipelineOwner.flushLayout`, `PipelineOwner.flushPaint`\). These methods initiate the corresponding rendering process and are invoked every frame as needed \(via `RendererBinding.drawFrame` and `WidgetsBinding.drawFrame`\).
   * Rendering takes place by flushing dirty render objects in a specific sequence:
-    * `PipelineOwner.flushLayout` lays out all dirty render objects \(laying out dirty children recursively based on the `RenderObject.performLayout` implementation\).
+    * `PipelineOwner.flushLayout` lays out all dirty render objects \(laying out dirty children recursively, based on each `RenderObject.performLayout` implementation\).
     * `PipelineOwner.flushCompositingBits` updates a cache used to indicate whether descendant render objects create new layers. If so, because painting is often interlaced \(i.e., a render object paints before and after its children\), certain operations may need to be implemented differently. If all descendants paint into the same layer, an operation \(like clipping\) can be performed using a single painting context. If not, some effects can only be achieved by inserting new layers. These bits determine which option will be used when painting.
-    * `PipelineOwner.flushPaint` paints all dirty render objects \(painting dirty render objects recursively, based on the `RenderObject.paint` implementation\).
+    * `PipelineOwner.flushPaint` paints all dirty render objects \(painting dirty children recursively, based on each `RenderObject.paint` implementation\).
     * `PipelineOwner.flushSemantics` compiles semantic data for all dirty render objects.
 * Whenever an object marks itself dirty, it will generally also invoke `PipelineOwner.requestVisualUpdate` to schedule a frame and eventually update the user interface. Requesting a visual update invokes the visual update handler that was bound when the `PipelineOwner` was constructed by `RendererBinding` \(`PipelineOwner.onNeedVisualUpdate`\) 
 * The default handler invokes`RendererBinding.ensureVisualUpdate` which schedules a frame \(via`SchedulerBinding.scheduleFrame`\) if it's not possible to apply the visual update during the current frame \(e.g., during post frame callbacks\). 
@@ -68,6 +68,23 @@
 * `RenderObjects` that solely determine their sizing using the input constraints  set `RenderObject.sizedByParent` to true and perform all layout in `RenderObject.performResize`.
 * Layout cannot depend on anything other than the incoming constraints; this includes the render object's position \(which is generally determined by the parent render object and stored in `ParentData`\). 
 
+## How are render objects composited into layers?
+
+* Compositing is the process by which painting \(via `RenderObject.paint`\) is divided into layers \(`Layer`\) before being rasterized and uploaded to the engine. Some render objects share the current layer whereas others introduce one or more new layers.
+* A repaint boundary corresponds to a render object that always paints into a new `OffsetLayer` \(stored in `RenderObject.layer`\). This allows the subtree rooted at this node to paint separately from its parent. Moreover, the offset layer can be re-used \(and translated\) to avoid unnecessary repainting.
+  * Other render objects that produce new layers can store the root-most layer in `RenderObject.layer` to allow future painting operations to update the existing layer rather than creating a new one.
+  * This is possible because `Layer` preserves a reference to any underlying `EngineLayer`, and `SceneBuilder` accepts an `oldLayer` argument when building a new scene.
+* Certain graphical operations are implemented differently depending on whether they're being applied within a single layer or across multiple layers \(e.g., clipping\).
+  * Render objects often interlace their own painting with their children's painting. 
+  * Therefore, to apply these graphical operations correctly, the framework must track which render objects introduce new layers into the scene.
+* `needsCompositing` indicates whether the subtree rooted at a render object \(e.g., the object and its descendants\) may introduce new layers. This indicates to the `PaintingContext` that certain operations \(e.g., clipping\) will need to be implemented differently.
+  * Render objects that always insert layers \(e.g., a video\) should override `alwaysNeedsCompositing`.
+* The compositing bits should be marked dirty \(via `RenderObject.markNeedsCompositingBitsUpdate`\) whenever the render tree is mutated; children that are added may introduce layers whereas children that are removed may allow a single layer to be shared. `RenderObject.adoptChild` and `RenderObject.dropChild` always call this method.
+  * All ancestors are marked dirty until reaching a repaint boundary or a node with a repaint boundary parent. In this case, all upstream objects will already have the correct compositing bits \(i.e., repaint boundary status cannot change; thus, all upstream compositing bits will have been configured when the render object was added\).
+* Updates are performed by `PipelineOwner.flushCompositingBits` when the corresponding dirty list is non-empty \(`PipelineOwner._nodesNeedingCompositingBitesUpdate`\). The update must be applied before painting.
+* Dirty render objects are sorted from back to front \(using `RenderObject.depth`\) then updated \(via `RenderObject._updateCompositingBits`\). This method performs a depth-first traversal of the render tree, marking each render object as needing compositing if any of its children need compositing \(or it's a repaint boundary or always needs compositing\).
+  * If the compositing bits are updated, the node is marked as needing repainting, too.
+
 ## How do render objects manage painting?
 
 * Render objects mark themselves as needing paint \(via`RenderObject.markNeedsPaint`\); this schedules a painting pass during the next frame.
@@ -80,14 +97,6 @@
 ## How do render objects manage hit testing?
 
 * `RenderView`’s child is a `RenderBox`, which must therefore define `RenderBox.hitTest`. To add a custom `RenderObject` to the render tree, the top level `RenderView` must be replaced \(which would be a massive undertaking\) or a `RenderBox` adapter added to the tree. It is up to the implementer to determine how `RenderBox.hitTest` is adapted to a custom `RenderObject` subclass; indeed, that render object can implement any manner of `hitTest`-like method of its choosing. Note that all `RenderObjects` are `HitTestTargets` and therefore will receive pointer events via `HitTestTarget.pointerEvent` once registered via `HitTestEntry`.
-
-## How are render objects composited into layers?
-
-* Render objects track a “`needsCompositing`” bit \(as well as an “`alwaysNeedsCompositing`” bit and a “`isRepaintBoundary`” bit, which are consulted when updating “`needsCompositing`”\). This bit indicates to the framework that a render object will paint into its own layer.
-* This bit is not set directly. Instead, it must be marked dirty whenever it might possibly change \(e.g., when adding or removing a child\). `RenderObject.markNeedsCompositingBitsUpdate` walks up the render tree, marking objects as dirty until it reaches a previously dirtied render object or a repaint boundary.
-* Later, just before painting, `PipelineOwner.flushCompositingBits` visits all dirty render objects, updating the “`needsCompositing`” bit by walking down the tree, looking for any descendent that needs compositing. This walk stops upon reaching a repaint boundary or an object that always needs compositing. If any descendent node needs compositing, all nodes along the walk need compositing, too.
-* It is important to create small “repaint sandwiches” to avoid introducing too many layers. \[?\]
-* Composited render objects are associated with an optional `ContainerLayer`. For render objects that are repaint boundaries, `RenderObject.layer` will be `OffsetLayer`. In either case, by retaining a reference to a previously used layer, `Flutter` is able to better utilize retained rendering -- i.e., recycle or selectively update previously rasterized bitmaps. This is possible because `Layers` preserve a reference to any underlying `EngineLayer`, and `SceneBuilder` accepts an “`oldLayer`” argument when building a new scene.
 
 ## How do render objects handle transformations?
 

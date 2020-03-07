@@ -70,7 +70,7 @@
 
 ## What are repaint boundaries?
 
-* Certain render objects introduce repaint boundaries to the render tree \(via `RenderObject.isRepaintBoundary`\). These render objects are always painted into a new layer, allowing them to paint separately from their parent. This effectively decouples the subtree rooted at the repaint boundary from previously painted nodes.
+* Certain render objects introduce repaint boundaries within the render tree \(via `RenderObject.isRepaintBoundary`\). These render objects are always painted into a new layer, allowing them to paint separately from their parent. This effectively decouples the subtree rooted at the repaint boundary from previously painted nodes.
   * This is useful when part of the UI remains mostly static and part of the UI updates frequently. A repaint boundary helps to avoid repainting the static portion of the UI.
   * Render objects that are repaint boundaries are associated with an `OffsetLayer`, a special type of layer that can update its position without re-rendering.
 * Render objects that form repaint boundaries are handled differently during painting \(via `PaintingContext.paintChild`\).
