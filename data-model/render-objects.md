@@ -1,4 +1,4 @@
-# Render Tree
+# Render Objects
 
 ## What are the render object building blocks?
 
@@ -116,9 +116,9 @@
 ## How do render objects handle transformations?
 
 * Visual transforms are implemented in `RenderObject.paint`. The same transform is applied logically \(i.e., when hit testing, computing semantics, mapping coordinates, etc\) via `RenderObject.applyPaintTransform`. This method applies the child transformation to the provided matrix.
-* `RenderObject.transformTo` chains paint transformation matrices mapping from the current coordinate space to the provided ancestor’s coordinate space. \[`WIP`\]
+* `RenderObject.transformTo` chains paint transformation matrices mapping from the current coordinate space to the provided ancestor’s coordinate space.
 
-## What other protocols are implemented in the framework?
+## What protocols are implemented in the framework?
 
 * `RenderBox`, `RenderSliver`.
 

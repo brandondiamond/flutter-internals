@@ -16,8 +16,8 @@
 
 * [Widgets](data-model/widgets.md)
 * [Elements](data-model/elements.md)
-* [Render Tree](data-model/render-tree.md)
-* [Box Model](data-model/box-model.md)
+* [Render Objects](data-model/render-objects.md)
+* [Boxes](data-model/boxes.md)
 
 ## 🎨Rendering
 

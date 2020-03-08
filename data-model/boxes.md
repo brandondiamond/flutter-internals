@@ -1,4 +1,4 @@
-# Box Model
+# Boxes
 
 ## What are the render box building blocks?
 
