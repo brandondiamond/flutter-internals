@@ -96,7 +96,22 @@
 
 ## How do render objects manage hit testing?
 
-* `RenderView`’s child is a `RenderBox`, which must therefore define `RenderBox.hitTest`. To add a custom `RenderObject` to the render tree, the top level `RenderView` must be replaced \(which would be a massive undertaking\) or a `RenderBox` adapter added to the tree. It is up to the implementer to determine how `RenderBox.hitTest` is adapted to a custom `RenderObject` subclass; indeed, that render object can implement any manner of `hitTest`-like method of its choosing. Note that all `RenderObjects` are `HitTestTargets` and therefore will receive pointer events via `HitTestTarget.pointerEvent` once registered via `HitTestEntry`.
+* Render objects implement `HitTestTarget` and can therefore process incoming pointer events \(via `RenderObject.handleEvent`\). However, render objects do not support hit testing: there is no builtin mechanism for a render object to subscribe to a pointer. This functionality is introduced by `RenderBox`.
+* The `GestureBinding` receives pointer events from the engine \(via `Window.onPointerDataPacket`\). These are queued \(via `GestureBinding._handlePointerDataPacket`\), which is flushed immediate \(via `GestureBinding._flushPointerEventQueue`\) or when events are unlocked \(via `GestureBinding.unlocked`, which is called by the `BaseBinding.lockEvents`\).
+  * Events are locked during reassembly and the initial warmup frame.
+* `GestureBinding._handlePointerEvent` processes each queued event in sequence using a table of hit test results \(`GestureBinding._hitTests`\) and a pointer router \(`GestureBinding._pointerRouter`\). 
+  * The pointer router is a `PointerRouter` instance that maps an integral pointer ID to an event handler callback \(`PointerRoute`, a function that accepts a `PointerEvent`\). The router also captures a transform matrix to map from screen coordinates to local coordinates.
+  * The hit testing table maps from an integral pointer ID to a record of all successful hits \(`HitTestResult`\). Each entry \(`HitTestEntry`\) records the recipient object \(`HitTestEntry.target`, a `HitTestTarget`\) and the transform needed to map from global coordinates to local coordinates \(`HitTestEntry.transform`\).
+  * A `HitTestTarget` is an object that can handle pointer events \(via `HitTestTarget.handleEvent`\). Render objects are hit test targets.
+* Initiating events \(`PointerUpEvent`, `PointerSignalEvent`\) trigger a hit test \(via `GestureBinding.hitTest`\). Ongoing events \(`PointerMoveEvent`\) are forwarded to the path associated with the initiating event. Terminating events \(`PointerUpEvent`, `PointerCancelEvent`\) remove the entry. 
+  * Hit test results are stored in the hit test table so that they can be retrieved for subsequent events associated with the same pointer. Hit tests are performed on `HitTestable` objects \(via `HitTestable.hitTest`\). 
+  * `GestureBinding` defines a default override that adds itself to the `HitTestResult`; invoking this also invokes any overrides mixed into the bindings. The binding processes events to resolve gesture recognizers using the gesture arena \(via `GestureBinding.handleEvent`\).
+  * `RendererBinding` provides an override that tests the render view first \(via `RenderView.hitTest`, since `RenderView` is `HitTestable`\). This is the entry point for hit testing in the render tree.
+  * The render view tests its render box child \(via `RenderBox.hitTest`\) before adding itself to the result.
+  * `RenderBox` doesn't implement `HitTestable`, but does provide a compatible interface \(used by `RenderView`\). `RenderObject` is not hit testable and does not participate in hit testing by default.
+* If the hit succeeds, the event is unconditionally forwarded to each `HitTestEntry` in the `HitTestResult` \(via `GestureBinding.dispatchEvent`\) in depth-first order.
+  * Each entry along the path is mapped to a target which handles the event \(via `HitTestTarget.processEvent`\). As a `HitTestTarget`, render objects are eligible to process pointers. However, there is no mechanism for them to participate in hit testing.
+  * Events are also forwarded via the pointer router to support gesture recognition, a more select event handling mechanism.
 
 ## How do render objects handle transformations?
 
