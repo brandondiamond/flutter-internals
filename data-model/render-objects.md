@@ -62,7 +62,7 @@
 
 * Render objects mark themselves as needing layout \(via`RenderObject.markNeedsLayout`\); this schedules a layout pass during the next frame.
 * Layout is performed by `PipelineOwner.flushLayout` when the corresponding dirty list is non-empty \(`PipelineOwner._nodesNeedingLayout`\). 
-* `RenderObject.layout` is invoked with a `Constraints` subclass as input; some subclasses incorporate other out-of-band input, too. The layout method applies input to produce an arbitrary output \(generally a size, though the type is unconstrained\).
+* `RenderObject.layout` is invoked with a `Constraints` subclass as input; some subclasses incorporate other out-of-band input, too. The layout method applies input to produce geometry \(generally a size, though the type is unconstrained\).
   * If a protocol uses out-of-band input, and this input changes, the affected render objects must be marked dirty \(e.g., a parent that uses its child baseline to perform layout must repeat layout whenever the child's baseline changes\).
 * If a parent depends on the child’s layout, it must pass the `parentUsesSize` argument to layout.
 * `RenderObjects` that solely determine their sizing using the input constraints  set `RenderObject.sizedByParent` to true and perform all layout in `RenderObject.performResize`.
@@ -93,6 +93,8 @@
   * If a render object's layer isn't attached \(i.e., isn't being composited\), painting must wait until it's reattached. The framework iterates through all ancestor render objects to find the nearest repaint boundary with an attached layer \(via `RenderObject._skippedPaintingOnLayer`\). Each is marked dirty to ensure that it's eventually painted.
 * If necessary, a new `PaintingContext` is created for the render object and forwarded to `RenderObject._paintWithContext`.
 * This method ensures that layout has been performed and, if so, invokes `RenderObject.paint` with the provided context.
+* `RenderObject.paintBounds` provides an estimate of how large a region this render object will paint \(as a `Rect` in local coordinates\). This doesn't need to match the render object's layout geometry.
+* `RenderObject.applyPaintTransform` captures how a render object transforms its children by applying the same transformation to a provided matrix \(e.x., if the child is painted at `(x, y)`, the matrix is translated by `(x, y)`\). This allows the framework to assemble a sequence of transformations to map between any two render object's coordinate systems \(via `RenderObject.getTransformTo`\). This process allows local coordinates to be mapped to global coordinates and vice versa.
 
 ## How do render objects manage hit testing?
 
@@ -115,8 +117,19 @@
 
 ## How do render objects handle transformations?
 
-* Visual transforms are implemented in `RenderObject.paint`. The same transform is applied logically \(i.e., when hit testing, computing semantics, mapping coordinates, etc\) via `RenderObject.applyPaintTransform`. This method applies the child transformation to the provided matrix.
-* `RenderObject.transformTo` chains paint transformation matrices mapping from the current coordinate space to the provided ancestor’s coordinate space.
+* Visual transforms are implemented in `RenderObject.paint`. The same transform is applied logically \(i.e., when hit testing, computing semantics, mapping coordinates, etc.\) via `RenderObject.applyPaintTransform`. This method applies the child transformation to the provided matrix \(`providedMatrix * childTransform`\).
+* `RenderObject.transformTo` chains paint transformation matrices mapping from the current coordinate space to an ancestor’s coordinate space. 
+  * If an ancestor isn't provided, the transformation will map to global coordinates \(i.e., the coordinates of the render object just below the `RenderView`; to obtain physical screen coordinates, these coordinates must be further transformed by `RenderView.applyPaintTransform`\). 
+
+## How does the view affect rendering?
+
+* `RenderView` receives a `ViewConfiguration` from the platform that specifies the screen's dimensions \(`ViewConfiguration.size`\) and the pixel depth \(`ViewConfiguration.devicePixelRatio`\).
+* `RenderView.performLayout` adopts this size \(`RenderView.size`\)  and, if present, lays out the render box child with tight constraints corresponding to the screen's dimensions \(`ViewConfiguration.size`\).
+* `RenderView.paint` and `RenderView.hitTest` delegate to the child, if present; the render view always adds itself to the hit test result.
+* When the configuration is set \(via `RenderView.configuration`\), the layer tree's root is replaced with a `TransformLayer` \(via `RenderView._updateMatricesAndCreateNewRootLayer`\) that converts physical pixels to logical pixels. This allows all descendant render objects to be isolated from changes to screen resolution.
+* `RenderView.applyPaintTransform` applies the resolution transform \(`RenderView._rootTransform`\) to map from logical global coordinates to physical screen coordinates.
+* `RenderView.compositeFrame` implements the final stage of the rendering pipeline, compositing all painted layers and uploading the resulting scene to the engine for rasterization \(via `Window.render`\).
+  * If system UI customization is enabled \(`RenderView.automaticSystemUiAdjustment`\), `RenderView._updateSystemChrome` will query the layer tree to find `SystemUiOverlayStyle` instances associated with the very top and very bottom of the screen \(this is the mechanism used to determine how to tint system UI like the status bar or Android's bottom navigation bar\). If found, the appropriate settings are communicated to the platform \(using `SystemChrome` platform methods\).
 
 ## What protocols are implemented in the framework?
 
