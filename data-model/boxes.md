@@ -41,13 +41,18 @@
 ## How do render boxes handle painting?
 
 * `RenderBox.paintBounds` describes the region that will be painted by a box. This determines the size of the buffer used for painting and is expressed in local coordinates. It need not match `RenderBox.size`.
-* Painting is the same as `RenderObject` painting. The offset provided corresponds to the origin of the render object in the canvas’s coordinate space \(which may not be the same\).
-* If the render box applies a transform when painting, including painting at a different offset than the one provided, `RenderBox.applyPaintTransform` must apply the same transformation. `RenderBox.globalToLocal` and `RenderBox.localToGlobal` rely on this transform to map cartesian coordinates.
-  * By default, `RenderBox.applyPaintTransform` will apply the child’s offset to the matrix as a translation.
+* Painting is the same as `RenderObject` painting. The canvas origin isn't necessarily the same as the box's origin. The provided offset describes where the box's origin is relatie to the canvas. That is, an offset of `(x, y)` implies that the box's logical `(0, 0)` is at position `(x, y)`.
+* If the render box applies a transform when painting \(e.g., painting at a different offset than the one provided\), `RenderBox.applyPaintTransform` must apply the same transformation to the provided matrix.
+  * `RenderBox.globalToLocal` and `RenderBox.localToGlobal` rely on this transformation to map from global coordinates to box coordinates and vice versa.
+  * By default, `RenderBox.applyPaintTransform` applies the child’s offset \(via `child.parentData.offset`\) as a translation.
 
 ## How do render boxes handle hit testing?
 
-* All `RenderBoxes` must implement `RenderBox.hitTest`, which by default delegates to `RenderBox.hitTestChildren` and `RenderBox.hitTestSelf`, in that order. Note that items added to the `BoxHitTestResult` first are treated as being on top of those added later. All entries in the `BoxHitTestResult` are fed events from the corresponding event stream via `RenderBox.handleEvent`.
+* Boxes support hit testing, a subscription-based mechanism for handling events. This is implemented by convention rather than using the `HitTestable` interface \(though testing originates from `RendererBinding`, which does does implement this interface\). 
+  * `RendererBinding.hitTest` is invoked using mixin chaining \(via `GestureBinding._handlePointerEvent`\).  The binding delegates to `RenderView.hitTest` which tests its child \(via `RenderBox.hitTest`\).
+  * `RenderBox.hitTest` determines whether the provided position \(in local coordinates\) falls within its bounds. If so, each child is tested in sequence \(via`RenderBox.hitTestChildren`\) before the box tests itself \(via `RenderBox.hitTestSelf`\). By default, both methods return false \(i.e., boxes do not handle events or forward events to their children\).
+  * Boxes subscribe to the event by adding themselves to `BoxHitTestResult`. Boxes added earlier are conceptually above those added later.
+  * All boxes in the `BoxHitTestResult` are notified of events \(via `RenderBox.handleEvent`\) in the order that they were added.
 
 ## What are intrinsic dimensions?
 

@@ -108,10 +108,11 @@
 * Initiating events \(`PointerUpEvent`, `PointerSignalEvent`\) trigger a hit test \(via `GestureBinding.hitTest`\). Ongoing events \(`PointerMoveEvent`\) are forwarded to the path associated with the initiating event. Terminating events \(`PointerUpEvent`, `PointerCancelEvent`\) remove the entry. 
   * Hit test results are stored in the hit test table so that they can be retrieved for subsequent events associated with the same pointer. Hit tests are performed on `HitTestable` objects \(via `HitTestable.hitTest`\). 
   * `GestureBinding` defines a default override that adds itself to the `HitTestResult`; invoking this also invokes any overrides mixed into the bindings. The binding processes events to resolve gesture recognizers using the gesture arena \(via `GestureBinding.handleEvent`\).
-  * `RendererBinding` provides an override that tests the render view first \(via `RenderView.hitTest`, since `RenderView` is `HitTestable`\). This is the entry point for hit testing in the render tree.
+  * `RendererBinding` provides an override that tests the render view first \(via `RenderView.hitTest`, called by `RendererBinding`\). This is the entry point for hit testing in the render tree.
   * The render view tests its render box child \(via `RenderBox.hitTest`\) before adding itself to the result.
-  * `RenderBox` doesn't implement `HitTestable`, but does provide a compatible interface \(used by `RenderView`\). `RenderObject` is not hit testable and does not participate in hit testing by default.
-* If the hit succeeds, the event is unconditionally forwarded to each `HitTestEntry` in the `HitTestResult` \(via `GestureBinding.dispatchEvent`\) in depth-first order.
+  * `RenderView` and `RenderBox` aren't `HitTestable` but do provide a compatible interface \(used by `RendererBinding`\). `RenderObject` does not participate in hit testing by default.
+    * `HitTestable` is only used at the binding level. All other hit testing is implementation dependent.
+* If the hit succeeds, the event is unconditionally forwarded to each `HitTestEntry` in the `HitTestResult` \(via `GestureBinding.dispatchEvent`\) in depth-first order. `GestureBinding` is a `HitTestDispatcher`.
   * Each entry along the path is mapped to a target which handles the event \(via `HitTestTarget.processEvent`\). As a `HitTestTarget`, render objects are eligible to process pointers. However, there is no mechanism for them to participate in hit testing.
   * Events are also forwarded via the pointer router to support gesture recognition, a more select event handling mechanism.
 
