@@ -2,10 +2,9 @@
 
 ## What are the render box building blocks?
 
-* `RenderBox` models a box in 2D cartesian coordinates with a width, height, and offset. The box's top-left corner defines its origin, with the bottom-right corner corresponding to `(width, height)`.
+* `RenderBox` models a box in 2D cartesian coordinates with a width, height, and position \(`RenderBox.size.width`, `RenderBox.size.height`,`RenderBox.parentData.offset`\). The box's top-left corner defines its origin, with the bottom-right corner corresponding to `(width, height)`.
 * `BoxParentData` stores the child's offset in the parent’s coordinate space \(`BoxParentData.offset`\). By convention, this data may not be accessed by the child.
-* `ContainerBoxParentData` extends `BoxParentData` with `ContainerParentDataMixin`. This combines the child offset with next and previous pointers \(`ContainerParentData.previousSibling`, `ContainerParentData.nextSibling`\) to support a doubly linked list of children.
-* `BoxConstraints` describes immutable constraints in the Cartesian plane expressed as a maximum and minimum width and height ranging from zero to infinity, inclusive. Constraints are satisfied by concrete sizes that fall within this range.
+* `BoxConstraints` describes immutable constraints expressed as a maximum and minimum width and height ranging from zero to infinity, inclusive. Constraints are satisfied by concrete sizes that fall within this range.
   * Box constraints are classified in several ways:
     * `BoxConstraints.isNormal`: minimum is greater than zero and less than or equal to the maximum in both dimensions.
     * `BoxConstraints.tight, BoxConstraints.isTight`: minimum and maximum values are equal in both dimensions.
@@ -22,26 +21,33 @@
 
 ## How do boxes model children?.
 
-* `RenderObjectWithChildMixin` and `ContainerRenderObjectMixin` can both be used with a type argument of `RenderBox`. The `ContainerRenderObjectMixin` accepts a parent data type argument; `ContainerBoxParentData` combines `BoxParentData` with the `ContainerParentDataMixin` to satisfy the type constraint.
-* `RenderBoxContainerDefaultsMixin` adds useful defaults to `ContainerRenderObjectMixin` for render boxes with children. Children must extend `RenderBox` and parent type must extend `ContainerBoxParentData`.
-  * This includes support for hit testing \(`RenderBoxContainerDefaultsMixin.defaultHitTestChildren`\), painting \(`RenderBoxContainerDefaultsMixin.defaultPaint`\), and listing \(`RenderBoxContainerDefaultsMixin.getChildrenAsList`\) children.
-* `RenderProxyBox` delegates all methods to a single `RenderBox` child. Proxies are useful for layering new functionality on top of a render box without altering layout or painting.
-* `RenderShiftedBox` delegates all methods to a single `RenderBox` child without providing a default layout implementation. Subclasses override `RenderShiftedBox.performLayout` to assign a position to the child \(via `BoxParentData.offset`\). 
+* `ContainerBoxParentData` extends `BoxParentData` with `ContainerParentDataMixin`. This combines a child offset \(`BoxParentData.offset`\) with next and previous pointers \(`ContainerParentData.previousSibling`, `ContainerParentData.nextSibling`\) to describe a doubly linked list of children.
+* `RenderObjectWithChildMixin` and `ContainerRenderObjectMixin` can both be used with a type argument of `RenderBox`. The `ContainerRenderObjectMixin` accepts a parent data type argument; `ContainerBoxParentData` is compatible and adds support for box children.
+* `RenderBoxContainerDefaultsMixin` adds useful defaults to `ContainerRenderObjectMixin` for render boxes with children. Type constraints require that children extend `RenderBox` and parent data extends `ContainerBoxParentData`.
+  * This mixin provides support for hit testing \(`RenderBoxContainerDefaultsMixin.defaultHitTestChildren`\), painting \(`RenderBoxContainerDefaultsMixin.defaultPaint`\), and listing \(`RenderBoxContainerDefaultsMixin.getChildrenAsList`\) children.
+* `RenderProxyBox` delegates all methods to a single `RenderBox` child, adopting the child's size as its own size and positioning the child at its origin. Proxies are convenient for writing subclasses that selectively override some, but not all, of a box's behavior. This box's implementation is provided by `RenderProxyBoxMixin`, which provides an alternative to direct inheritance. Proxy boxes uses `ParentData` rather than `BoxParentData` since the child's offset is never used.
+  * There are numerous examples throughout the framework:
+    * `RenderAbsorbPointer` overrides `RenderProxyBox.hitTest` to disable hit testing for a subtree \(i.e., by not testing its child\) when `RenderAbsorbPointer.absorbing` is enabled.
+    * `RenderAnimatedOpacity` listens to an animation \(`RenderAnimatedOpacity.opacity`\) to render its child with varying opacity \(via `RenderAnimatedOpacity.paint`\). This box manages its listener by overriding `RenderProxyBox.attach` and `RenderProxyBox.detach`. It selective inserts an `OpacityLayer` \(i.e., for translucent values only\), and manages `RenderBox.alwaysNeedsCompositing` to reflect whether a layer will be added \(via `RenderAnimatedOpacityMixin._updateOpacity`, called in response to the animation\).
+    * `RenderIntrinsicWidth` overrides `RenderProxyBox.performLayout` to adopt a size that corresponds to its child's intrinsic width, subject to the incoming constraints. It also overrides intrinsic sizing methods since it also provides size snapping \(`RenderBox.stepWidth`\).
+* `RenderShiftedBox` delegates all methods to a single `RenderBox` child, but leaves layout undefined. Subclasses override `RenderShiftedBox.performLayout` to assign a position to the child \(via `BoxParentData.offset`\). Otherwise, this subclass is analogous to `RenderProxyBox`.
+  * `RenderPadding` overrides `RenderShiftedBox.performLayout` to deflate the incoming constraints by the resolved padding amount. The child is laid out using the new, padded constraints and positioned within the padded region.
+  * `RenderBaseline` overrides `RenderShiftedBox.performLayout` to align its child's baseline \(via `RenderBox.getDistanceToBaseline`\) with an offset from its top edge \(`RenderBaseline.baseline`\). It then sizes itself such that its bottom is coincident with the child's baseline \(this can potentially truncate the top of the child\).
 
 ## How do render boxes handle layout?
 
-* Boxes use the standard `RenderObject` layout protocol to map from incoming `BoxConstraints` to a concrete `Size` \(stored in `RenderBox.size`\). Layout typically sets the child's offset relative to the parent, too \(`BoxParentData.offset`\). This information may not be read by the child during layout.
-* Boxes add support for intrinsic dimensions \(an ideal size, computed outside of the standard layout protocol\) as well as baselines \(a line to use for vertical alignment, typically only used when laying out text\). `RenderBox` instances track changes to these values and whether the parent has queried them; if so, when that box is marked as needing layout, the parent is marked as well.
+* Boxes use the standard `RenderObject` layout protocol to map from incoming `BoxConstraints` to a concrete `Size` \(stored in `RenderBox.size`\). Layout also determines the child's offset relative to the parent \(`RenderBox.parentData.offset`\). This information should not be read by the child during layout.
+* Boxes add support for intrinsic dimensions \(an ideal size, computed outside of the standard layout protocol\) as well as baselines \(a line to use for vertical alignment, typically used when laying out text\). `RenderBox` instances track changes to these values and whether the parent has queried them; if so, when that box is marked as needing layout, the parent is marked as well.
   * Intrinsic dimensions are cached \(`RenderBox._cachedIntrinsicDimensions`\) whenever they're computed \(via `RenderBox._computeIntrinsicDimension`\). The cache is disabled during debugging.
   * Baselines are cached \(`RenderBox._cachedBaselines`\) whenever they're computed \(via `RenderBox.getDistanceToActualBaseline`\). Different baselines are computed for alphabetic and ideographic text.
-* `RenderBox.markNeedsLayout` marks the parent as needing layout if the box's intrinsic dimension or baseline caches have been populated. If so, both are cleared so that new values are computed after the next layout pass.
-* By default, boxes that are sized by their parents adopt the smallest possible size given the incoming constraints \(via `RenderBox.performResize`\).
-* Render boxes can have non-box children. In this case, the constraints passed from the parent to the child will need to be adapted from `BoxConstraints` to the appropriate type.
+* `RenderBox.markNeedsLayout` marks the parent as needing layout if the box's intrinsic dimension or baseline caches have been modified \(i.e., this implies that the parent has accessed the box's "out-of-band" geometry\). If so, both are cleared so that new values are computed after the next layout pass.
+* By default, boxes that are sized by their parents adopt the smallest size permitted by incoming constraints \(via `RenderBox.performResize`\).
+* Boxes can have non-box children. In this case, the constraints provided to children will need to be adapted from `BoxConstraints` to the appropriate type.
 
 ## How do render boxes handle painting?
 
+* Boxes use the standard `RenderObject` painting protocol to paint themselves to a provided canvas. The canvas's origin isn't necessarily coincident with the box's origin; the offset provided to `RenderBox.paint` describes where the box's origin falls on the canvas. The canvas and the box will always be axis-aligned.
 * `RenderBox.paintBounds` describes the region that will be painted by a box. This determines the size of the buffer used for painting and is expressed in local coordinates. It need not match `RenderBox.size`.
-* Painting is the same as `RenderObject` painting. The canvas origin isn't necessarily the same as the box's origin. The provided offset describes where the box's origin is relatie to the canvas. That is, an offset of `(x, y)` implies that the box's logical `(0, 0)` is at position `(x, y)`.
 * If the render box applies a transform when painting \(e.g., painting at a different offset than the one provided\), `RenderBox.applyPaintTransform` must apply the same transformation to the provided matrix.
   * `RenderBox.globalToLocal` and `RenderBox.localToGlobal` rely on this transformation to map from global coordinates to box coordinates and vice versa.
   * By default, `RenderBox.applyPaintTransform` applies the child’s offset \(via `child.parentData.offset`\) as a translation.
