@@ -54,38 +54,44 @@
 
 ## How do render boxes handle hit testing?
 
-* Boxes support hit testing, a subscription-based mechanism for handling events. This is implemented by convention rather than using the `HitTestable` interface \(though testing originates from `RendererBinding`, which does does implement this interface\). 
+* Boxes support hit testing, a subscription-like mechanism for delegating and processing events. The box protocol implements a custom flow rather than extending the`HitTestable` interface \(though `RendererBinding`, the hit testing entry point, does implement this interface\). 
   * `RendererBinding.hitTest` is invoked using mixin chaining \(via `GestureBinding._handlePointerEvent`\).  The binding delegates to `RenderView.hitTest` which tests its child \(via `RenderBox.hitTest`\).
-  * `RenderBox.hitTest` determines whether the provided position \(in local coordinates\) falls within its bounds. If so, each child is tested in sequence \(via`RenderBox.hitTestChildren`\) before the box tests itself \(via `RenderBox.hitTestSelf`\). By default, both methods return false \(i.e., boxes do not handle events or forward events to their children\).
-  * Boxes subscribe to the event by adding themselves to `BoxHitTestResult`. Boxes added earlier are conceptually above those added later.
+  * `RenderBox.hitTest` determines whether an offset \(in local coordinates\) falls within its bounds. If so, each child is tested in sequence \(via`RenderBox.hitTestChildren`\) before the box tests itself \(via `RenderBox.hitTestSelf`\). By default, both methods return `false` \(i.e., boxes do not handle events or forward events to their children\).
+  * Boxes subscribe to the related event stream \(i.e., receive `RenderBox.handleEvent` calls for events related to the interaction\) by adding themselves to `BoxHitTestResult`. Boxes added earlier take precedence.
   * All boxes in the `BoxHitTestResult` are notified of events \(via `RenderBox.handleEvent`\) in the order that they were added.
 
 ## What are intrinsic dimensions?
 
-* Conceptually, the intrinsic dimensions of a box are its natural dimensions -- the size it “wants” to be. The precise definition depends on the semantics of the box in question. Note that intrinsic dimensions are often defined in terms of child intrinsic dimensions and are therefore expensive to calculate \(typically traversing an entire subtree\).
-* Intrinsic dimensions often do not match the dimensions resulting from layout \(except when using the `IntrinsicHeight` and `IntrinsicWidth` widgets, which attempt to layout their child using its intrinsic dimensions\).
-  * Intrinsic dimensions are generally ignored unless one of these widgets are used \(or another widget that explicitly incorporates intrinsic dimensions into its own layout\).
-* The render box model describes intrinsic dimensions in terms of minimum and maximum values for width and height.
+* Conceptually, the intrinsic dimensions of a box are its natural dimensions \(i.e., the size it “wants” to be\). The precise definition depends on the box's implementation and semantics \(i.e., what the box represents\). 
+  * Intrinsic dimensions are often defined in terms of the intrinsic dimensions of children and are therefore expensive to calculate \(typically traversing an entire subtree\).
+* Intrinsic dimensions often differ from the dimensions produced by layout \(except when using the `IntrinsicHeight` and `IntrinsicWidth` widgets, which attempt to layout a child using its intrinsic dimensions\).
+  * Intrinsic dimensions are generally ignored unless one of these widgets are used \(or another widget that explicitly incorporates intrinsic dimensions into its own layout, e.g., `RenderTable`\).
+* The box model describes intrinsic dimensions in terms of minimum and maximum values for width and height \(via `RenderBox.computeMinIntrinsicHeight`, `RenderBox.computeMaxIntrinsicHeight`, etc.\). Both receive a value for the opposite dimension \(if infinite, the other dimension is unconstrained\); this is useful for boxes that define one intrinsic dimension in terms of the other \(e.g., text\).
   * Minimum intrinsic width is the smallest width before the box cannot paint correctly without clipping.
     * Intuition: making the box thinner would clip its contents.
-    * If width is determined by height \(ignoring constraints\), the incoming height \(which may be infinite, i.e., unconstrained\) should be used. Otherwise, ignore the height.
+    * If width is determined by height according to the box's semantics, the incoming height \(which may be infinite, i.e., unconstrained\) should be used. Otherwise, ignore the height.
   * Minimum intrinsic height is the same concept for height.
   * Maximum intrinsic width is the smallest width such that further expansion would not reduce minimum intrinsic height \(for that width\).
     * Intuition: making the box wider won’t help fit more content.
-    * If width is determined by height \(ignoring constraints\), the incoming height \(which may be infinite, i.e., unconstrained\) should be used. Otherwise, ignore the height.
+    * If width is determined by height according to the box's semantics, the incoming height \(which may be infinite, i.e., unconstrained\) should be used. Otherwise, ignore the height.
   * Maximum intrinsic height is the same concept for height.
-* The specific meaning of intrinsic dimensions depends on the implementation.
+* The specific meaning of intrinsic dimensions depends on the box's semantics.
   * Text is width-in-height-out.
-    * Max intrinsic width: the width of the string without line breaks \(increasing the width would not shrink the preferred height\).
-    * Min intrinsic width: the width of the widest word \(decreasing the width would clip the word or cause an invalid break\).
-    * Height intrinsics derived from width intrinsics for the given width.
-  * Viewports ignore incoming constraints and aggregate child dimensions without clipping.
-  * Aspect ratio boxes are entirely determined when one dimension is provided.
-    * Use the incoming dimension to compute the other. If unconstrained, recurse.
+    * Maximum intrinsic width: the width of the string without line breaks \(increasing the width would not shrink the preferred height\).
+    * Minimum intrinsic width: the width of the widest word \(decreasing the width would clip the word or cause an invalid break\).
+    * Intrinsic heights are computed by laying out text with the provided width.
+  * Viewports ignore incoming constraints and aggregate child dimensions without clipping \(i.e., ideally, a viewport can render all of its children without clipping\).
+  * Aspect ratio boxes use the incoming dimension to compute the queried dimension \(i.e., width to determine height and vice versa\). If the incoming dimension is unbounded, the child's intrinsic dimensions are used instead.
   * When intrinsic dimensions cannot be computed or are too expensive, return zero.
 
 ## What are baselines?
 
-* Baselines are used to vertically align children independent of font size, padding, etc. When a real baseline isn’t available, the bottom of the render box is used. Baselines are expressed as an offset from the box’s y-coordinate; if there are multiple children, the first sets the baseline.
-* Only a render box’s parent can invoke `RenderBox.getDistanceToBaseline`, and only after that render box has been laid out in the parent’s `RenderBox.performLayout` method.
+* Baselines are a concept borrowed from text rendering to describe the line upon which all glyphs are placed. Portions of the glyph typically extend below this line \(e.g., descenders\) as it serves primarily to vertically align a sequence of glyphs in a visually pleasing way. Characters from different fonts can be visually aligned by positioning each span of text such that baselines are collinear.
+  * Boxes that define a visual baseline can also be aligned in this way.
+* Boxes may specify a baseline by implementing `RenderBox.computeDistanceToActualBaseline`. The returned value represents a vertical offset from the top of the box. Values are cached until the box is marked as needing layout.
+  * Boxes typically return null \(i.e., they don't define a logical baseline\), a value intrinsic to what they represent \(i.e., the baseline of a span of text\), delegate to a single child, or use `RenderBoxContainerDefaultsMixin` to produce a baseline from a set of children. 
+    * `RenderBoxContainerDefaultsMixin.defaultComputeDistanceToFirstActualBaseline` returns the first valid baseline reported by the set of children, adjusted to account for the child's offset.
+    * RenderBoxContainerDefaultsMixin.defaultComputeDistanceToHighestActualBaseline returns the minimum baseline \(i.e., vertical offset\) amongst all children, adjusted to account for the child's offset.
+* `RenderBox.getDistanceToBaseline` returns the offset to the box's bottom edge \(`RenderBox.size.height`\) if an actual baseline isn't available \(i.e., `RenderBox.computeDistanceToActualBaseline` returns `null`\).
+  * The baseline may only be queried by a box's parent and only after the box has been laid out \(typically during parent layout or painting\).
 
