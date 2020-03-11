@@ -2,7 +2,8 @@
 
 ## What is a relayout boundary?
 
-* A relayout boundary is a render object that meets a set of criteria that allow it to layout independently of its parent. That is, the render object subtree rooted at a relayout boundary can never invalidate nodes outside of that subtree.
+* A relayout boundary is a logical divide between nodes in the render tree. Nodes below the boundary can never invalidate the layout of nodes above the boundary.
+* The boundary is represented as a render object \(`RenderObject._relayoutBoundary`\) that meets a set of criteria allowing it to layout independently of its parent. That is, the subtree rooted at a relayout boundary node can never invalidate nodes outside of that subtree.
   * A render object defines a relayout boundary \(i.e., cannot influence its parent's layout\) if its parent explicitly ignores its size \(`!parentUsesSize`\),  fully determines its size \(`sizedByParent`\),  or provides tight constraints.
   * The last two cases imply that the child cannot change size regardless of what happens in its subtree.
 * Relayout boundaries limit how many ancestor nodes must be marked dirty when a render object needs layout. The walk can be cut off at the nearest relayout boundary since nodes beyond that point cannot be affected by descendant layout.
