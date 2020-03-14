@@ -6,30 +6,36 @@
 * The boundary is represented as a render object \(`RenderObject._relayoutBoundary`\) that meets a set of criteria allowing it to layout independently of its parent. That is, the subtree rooted at a relayout boundary node can never invalidate nodes outside of that subtree.
   * A render object defines a relayout boundary \(i.e., cannot influence its parent's layout\) if its parent explicitly ignores its size \(`!parentUsesSize`\),  fully determines its size \(`sizedByParent`\),  provides tight constraints, or isn't a render object \(e.g., `RenderView`\).
   * The last two cases imply that the child cannot change size regardless of what happens in its subtree.
-  * **TODO**: talk about how parent uses size is used to determine what can be a relayout boundary which is the mechanism that causes parents to be marked dirty when the child is marked dirty, e.g., because things up to the boundary are always marked dirty.
+  * The `parentUsesSize` flag doesn't enable special handling. If true, it enforces that the object cannot delineate a relayout boundary. This ensures that the render object's parent will always be marked dirty if the object itself is marked dirty. In fact, all ancestors up to the nearest relayout boundary are marked dirty when this occurs.
 * Relayout boundaries limit how many ancestor nodes must be marked dirty when a render object needs layout. The walk can be cut off at the nearest ancestor relayout boundary since nodes beyond that point cannot be affected by descendant layout.
 * Relayout boundaries are ignored when actually performing layout. Render objects always layout their children. However, children are expected to cut off the walk if they haven't been marked dirty or are receiving identical constraints \(i.e., nothing has changed so layout isn't needed\). `RenderObject.layout` applies this logic automatically.
 
 ## How is layout marked dirty?
 
-* Marking render objects as requiring layout allows layout operations to batched \(i.e., layout can be processed in a single walk rather than potentially laying out nodes multiple times\).
-* When a render object is marked dirty \(via `RenderObject.markNeedsLayout`\), all ancestors up to and including the nearest relayout boundary are marked dirty \(via `RenderObject.markParentNeedsLayout`\).
-  * Only the nearest enclosing relayout boundary is added to `PipelineOwner._nodeNeedingLayout`. Performing layout on this node will recursively layout all descendants. This also schedules the next frame \(via `PipelineOwner.requestVisualUpdate`\) so that layout changes will be applied and eventually painted.
-* Layout must be recomputed if the `sizedByParent` bit changes since this potentially invalidates the current layout \(i.e., by adding or removing relayout boundaries\).
+* `PipelineOwner` maintains a list of dirty nodes \(`PipelineOwner._nodeNeedingLayout`\) that are cleaned once per frame \(via `PipelineOwner.flushLayout`\).
+* Marking render objects as needing layout allows operations to batched \(i.e., layout can be processed in a single walk rather than potentially laying out nodes multiple times\).
+* When a render object is marked dirty \(via `RenderObject.markNeedsLayout`, which sets `RenderObject._needsLayout`\) , all ancestors up to and including the nearest relayout boundary are marked dirty \(via `RenderObject.markParentNeedsLayout`\).
+  * Only the nearest enclosing relayout boundary is added to `PipelineOwner._nodeNeedingLayout`. Performing layout on this node will recursively layout all descendants. This also schedules the next frame \(via `PipelineOwner.requestVisualUpdate`\) so that layout changes will be applied \(via `PipelineOwner.flushLayout`\).
+  * It's possible that nodes later in the dirty list will be cleaned while laying out earlier nodes; `PipelineOwner.flushLayout` ignores any clean nodes.
+* A render object and its parent must be notified if the `sizedByParent` bit changes \(via `RenderObject.markNeedsLayoutForSizedByParentChange`\). Updating this bit can add or remove a relayout boundary from the render tree \(the change is committed subsequently by `RenderObject.layout`\). Most objects do not update this bit dynamically.
+  * The parent must be marked dirty because nodes in the dirty list are laid out using `RenderObject._layoutWithoutResize`, which doesn't update relayout boundaries. Thus, since the child may change status, its parent must be laid out, too.
+  * Changing this bit also implies that the child will adopt new dimensions, potentially invalidating the parent's layout.
 
 ## How is layout performed?
 
-* `PipelineOwner.flushLayout` triggers layout for all nodes in the dirty list \(`PipelineOwner._nodesNeedingLayout`\) in order of increasing depth.  The nodes in this list are laid out using `RenderObject._layoutWithoutResize` instead of `RenderObject.layout`.
-  * All nodes in PipelineOwner.\_nodesNeedingLayout delineate relayout boundaries.
-  * `RenderObject.performResize` is never necessary for a node in the dirty list.
-    * If a dirty node is sized by its parent, and the parent is itself clean, the incoming constraints cannot have changed. Thus, resizing is unnecessary.
-    * If the parent is dirty, then the parent \(or the nearest enclosing relayout boundary\) will appear earlier in the dirty list and undergo layout first. This will also layout the original dirty node, potentially resizing it. When that node is later processed, it will have already been marked clean.
-* A child will perform layout \(via `RenderObject.layout`\) if it's been marked dirty, has received new constraints, or has just become a relayout boundary.
-  * Layout optimizations are applied in the marking phase rather than the layout phase. That is, nodes will not be marked dirty if any of the optimizations apply at that point and so layout will not progress beyond this point.
-* **TODO:** If the render object is sized by its parent, that happens before perform layout \(which is always called no matter what\). Render objects that are sized by their parent adopt a new size \(via `RenderObject.performResize`\). 
-* `RenderObject.performResize` is responsible for layout if a render object's size is solely determined by the constraints provided by the parent \(`RenderObject.sizedByParent`\).
-* Otherwise, `RenderObject.performLayout` will update the node's layout then clear the layout bit \(`RenderObject._needsLayout`\). This also marks the node as being dirty for semantics and painting.
-* In either case, a parent is responsible for laying out its children recursively \(via `RenderObject.performLayout`\). This may happen before or after the parent depending on whether the parent uses the children's layout. Render objects typically update their children's parent data as part of layout.
+* `PipelineOwner.flushLayout` triggers layout for all nodes in the dirty list \(`PipelineOwner._nodesNeedingLayout`\) in order of increasing depth. The nodes in this list correspond to relayout boundaries and are laid out using `RenderObject._layoutWithoutResize` instead of `RenderObject.layout`. 
+  * `RenderObject.performResize` is never necessary for a node in the dirty list. Consider a node that is sized by its parent:
+    * If the parent isn't dirty, the incoming constraints won't change. Thus, resizing is unnecessary.
+    * If the parent is dirty, since nodes are cleaned from top to bottom, it will be laid out first. This will recursively layout the original node \(potentially resizing it\), causing it to be skipped later in the process.
+  * `RenderObject._layoutWithoutResize` never updates cached constraints \(`RenderObject.constraints`\) or the relayout boundary \(`RenderObject._relayoutBoundary`\). 
+    * Incoming constraints won't change since ancestor nodes haven't been marked dirty.
+    * Relayout boundary won't change since the relationship between this node and its parent hasn't changed. If it had, the parent would have been marked dirty, too \(via `RenderObject.markNeedsLayoutForSizedByParentChange`\).
+* A child will perform layout \(via `RenderObject.layout`\) if it's been marked dirty, has received new constraints, or has just become a relayout boundary. Otherwise, it will mark itself clean and cut off the walk.
+* * Note that layout optimizations are applied in the marking phase rather than the layout phase. Relayout boundaries provide a limit on the nodes that are marked dirty when a descendant is marked dirty; they have no other direct effect.
+* Objects that are sized by their parent \(`RenderObject.sizedByParent`\) adopt a new size using the incoming constraints \(via `RenderObject.performResize`\). All objects, including those that were resized, then perform layout \(via `RenderObject.performLayout`\); this method is responsible for laying out any children \(via `RenderObject.layout`\) and updating their parent data as needed.
+  * This may happen before or after the parent depending on whether the parent uses the children's layout.
+  * Objects that are not sized by their parent must adopt a new size via `RenderObject.performLayout`.
+* Once completed, `RenderObject.layout` marks the object as being clean for layout and dirty for semantics and painting.
 * Layout captures the most recent set of constraints \(`RenderObject.constraints`\) and updates a reference to the nearest ancestor render object that defines a relayout boundary \(`RenderObject._relayoutBoundary`\).
 
 ## How is layout optimized?
