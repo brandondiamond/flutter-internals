@@ -2,7 +2,7 @@
 
 ## What are the render box building blocks?
 
-* `RenderBox` models a box in 2D cartesian coordinates with a width, height, and position \(`RenderBox.size.width`, `RenderBox.size.height`,`RenderBox.parentData.offset`\). The box's top-left corner defines its origin, with the bottom-right corner corresponding to `(width, height)`.
+* `RenderBox` models a two dimensional box with a width, height, and position \(`RenderBox.size.width`, `RenderBox.size.height`,`RenderBox.parentData.offset`\). The box's top-left corner defines its origin, with the bottom-right corner corresponding to `(width, height)`.
 * `BoxParentData` stores the child's offset in the parent’s coordinate space \(`BoxParentData.offset`\). By convention, this data may not be accessed by the child.
 * `BoxConstraints` describes immutable constraints expressed as a maximum and minimum width and height ranging from zero to infinity, inclusive. Constraints are satisfied by concrete sizes that fall within this range.
   * Box constraints are classified in several ways:
