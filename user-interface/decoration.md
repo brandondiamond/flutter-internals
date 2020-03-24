@@ -2,7 +2,7 @@
 
 ## What are decorations?
 
-* A decoration is a high level description of graphics to be painted onto a canvas, generally corresponding to a box but may also describe other shapes, too. In addition to being paintable, decorations support interaction and interpolation.
+* A decoration is a high level description of graphics to be painted onto a canvas, generally corresponding to a box but can also describe other shapes, too. In addition to being paintable, decorations support interaction and interpolation.
 
 ## What are the common components of a decoration?
 

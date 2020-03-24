@@ -13,7 +13,7 @@
 * All flexible containers follow the same protocol.
   * Layout children without flex factors with unbounded main constraints and the incoming cross constraints \(if stretching, cross constraints are tight\).
   * Apportion remaining space among flex children using flex factors.
-    * Main axis size = `myFlex` \* \(`freeSpace` / `totalFlex`\)
+    * Main axis size = `myFlex * (freeSpace / totalFlex)`
   * Layout each child as above, with the resulting size as the main axis constraint. Use tight constraints for `FlexFit.tight`; else, use loose.
   * The cross extent is the max of all child cross extents.
   * If using `MainAxisSize.max`, the main extent is the incoming max constraint. Else, the main extent is the sum of all child extents in that dimension \(subject to constraints\).

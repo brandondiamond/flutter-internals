@@ -34,6 +34,7 @@
 ## How do notifications work?
 
 * Notification support is not built directly into the widget abstraction, but layered on top of it.
-* `Notification` is an abstract class that searches up the element tree, visiting each `NotificationListener` subclass \(`Notification.dispatch` calls `Notification.visitAncestor`, which performs this walk\).
-* The notification invokes `NotificationListener._dispatch` on each instance along this walk. If a listener is defined for the concrete notification type, that listener is invoked. If this returns true, the walk terminates. Otherwise, the notification continues to bubble up the tree.
+* `Notification` is an abstract class that searches up the element tree, visiting each widget subclass of `NotificationListener` \(`Notification.dispatch` calls `Notification.visitAncestor`, which performs this walk\).
+  * The notification invokes `NotificationListener._dispatch` on each suitable widget, comparing the notification's static type with the callback's type parameter. If there's a match \(i.e., the notification is a subtype of the callback's type parameter\), the listener is invoked.
+  * If the listener returns true, the walk terminates. Otherwise, the notification continues to bubble up the tree.
 
