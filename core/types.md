@@ -9,7 +9,7 @@
 ## What types are used to describe magnitudes?
 
 * `Size` is an `OffsetBase` subclass that represents a width and a height. Geometrically, `Size` describes a rectangle with its top left corner coincident with the origin. `Size` includes a number of methods describing a rectangle with dimensions matching the current instance and a top left corner coincident with a specified offset. Sizes may be manipulated algebraically using standard operators; the `+` operator expands the size according to a provided delta \(via `Offset`\). Sizes can be interpolated.
-* `Radius` describes either a circular or elliptical radius. The radius is expressed as intersections of the x- and y-axes. Circular radii have identical values. Radii may be manipulated algebraically using standard operators and interpolated.
+* `Radius` describes either a circular or elliptical radius. The radius is expressed as intersections of the x and y-axes. Circular radii have identical values. Radii may be manipulated algebraically using standard operators and interpolated.
 
 ## What types are used to describe regions?
 
