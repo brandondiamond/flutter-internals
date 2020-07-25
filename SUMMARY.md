@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Introduction](README.md)
+* [Introdução](README.md)
 * [Get Involved ❗](get-involved.md)
 * [Learning Path](learning-path.md)
 

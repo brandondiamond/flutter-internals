@@ -1,10 +1,10 @@
-# Introduction
+# Introdução
 
-Welcome to Flutter Internals, a **community-maintained** open source book providing a guided tour through Flutter's implementation.
+Bem-vindo\(a\) Flutter Internals, um livro open source **mantido pela comunidade** que fornece um tour guiado pela implementação do Flutter.
 
-This book is very much a "work in progress"; in fact, we'd **love your help** with grammatical fixes, technical edits, and new content.
+Este livro está "em andamento"; de fato, nós adoraríamos a sua ajuda correção de erros gramaticais, edição técnica e novos conteúdos.
 
-\*\*\*\*[**Click here**](https://app.gitbook.com/invite/flutter-internals?invite=-Lz8eupmUYQGm6UH34Dq) to become a contributor.
+\*\*\*\*[**Clique aqui**](https://app.gitbook.com/invite/flutter-internals?invite=-Lz8eupmUYQGm6UH34Dq) para se tornar um contribuidor. 
 
 ## What is this book?
 
