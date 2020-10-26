@@ -13,7 +13,7 @@
 * `LeafRenderObjectWidget`, `SingleChildRenderObjectWidget`, and `MultiChildRenderObjectWidget` provide storage for render object widgets with zero or more children without constraining how the underlying render object is created or updated. These widgets correspond to`LeafRenderObjectElement`, `SingleChildRenderObjectElement`, and `MultiChildRenderObjectElement`, respectively, which manage the underlying child model in the element and render trees.
 * Anonymous widgets can be created using `Builder` and `StatefulBuilder`.
 
-## How do stateless widgets work?
+## stateless widgets 如何工作？
 
 * `StatelessWidget` is a trivial subclass of `Widget` that defines a `StatelessWidget.build` method and configures a `StatelessElement`.
 * `StatelessElement` is a `ComponentElement` subclass that invokes `StatelessWidget.build` in response to `StatelessElement.build` \(e.g., delegates building to its widget\).

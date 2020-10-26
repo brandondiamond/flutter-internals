@@ -4,13 +4,13 @@
 * [Get Involved ❗](get-involved.md)
 * [Learning Path](learning-path.md)
 
-## 🏭Core
+## 🏭核心 <a id="core"></a>
 
-* [Framework](core/framework.md)
-* [Types](core/types.md)
+* [Framework - 框架](core/framework.md)
+* [Types - 类型](core/types.md)
 * [Messaging](core/messaging.md)
 * [Platform Integration](core/platform-integration.md)
-* [Conventions](core/conventions.md)
+* [Conventions - 约定](core/conventions.md)
 
 ## 🌳Data Model
 

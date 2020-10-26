@@ -1,22 +1,23 @@
-# Types
+# Types - 类型
 
-## What types are used to describe positions?
+## 什么类型用来描述2d坐标 positions?
 
-* `OffsetBase` represents a 2-dimensional \(2D\), axis-aligned vector. Subclasses are immutable and comparable using standard operators.
-* `Offset` is an `OffsetBase` subclass that may be understood as a point in cartesian space or a vector. Offsets may be manipulated algebraically using standard operators; the `&` operator allows a `Rect` to be constructed by combining the offset with a `Size` \(the offset identifies the rectangle’s top left corner\). Offsets can be interpolated.
-* `Point` is a dart class for representing a 2D point on the cartesian plane.
+* `OffsetBase`表示二维（2D）轴对齐向量。子类是不可变的，并且可以使用标准运算符进行比较。\(重载了运算符 +, - 等等\)
+* `Offset` 是 `OffsetBase` 子类, 可以将其理解为笛卡尔空间或向量中的点。偏移量可以使用标准运算符进行代数运算。`＆`运算符允许通过将偏移量与大小结合起来来构造`Rect`（偏移量标识矩形的左上角）。偏移~~量~~可以被用于插值计算。\(插值：用来填充图像变换时像素之间的空隙。不理解的自行学习基础知识\)
+*  `Point`类，用于表示笛卡尔平面上的2D点。
 
-## What types are used to describe magnitudes?
+## 什么类型用来描述大小范围 magnitudes?
 
-* `Size` is an `OffsetBase` subclass that represents a width and a height. Geometrically, `Size` describes a rectangle with its top left corner coincident with the origin. `Size` includes a number of methods describing a rectangle with dimensions matching the current instance and a top left corner coincident with a specified offset. Sizes may be manipulated algebraically using standard operators; the `+` operator expands the size according to a provided delta \(via `Offset`\). Sizes can be interpolated.
-* `Radius` describes either a circular or elliptical radius. The radius is expressed as intersections of the x and y-axes. Circular radii have identical values. Radii may be manipulated algebraically using standard operators and interpolated.
+* `Size`是一个`OffsetBase`子类，它表示宽度和高度。从几何角度来看,它描述了一个左顶点在坐标原点的矩形. 多个Size可以使用标准运算符进行代数运算。+运算符会根据提供的增量（通过“偏移”）来扩展大小。. 他们可以被用于插值计算
+* `Radius` 描述圆形或椭圆形的半径。r与坐标系xy相交. 圆的每个半径值一样.  同上,每个r都能用操作符计算,也能计算插值.
+* \`\`
 
-## What types are used to describe regions?
+## 什么类型用来描述区域面积 regions?
 
-* `Rect` is an immutable, 2D, axis-aligned, floating-point rectangle whose coordinates are relative to a given origin. A rectangle can be described in various ways \(e.g., by its center, by a bounding circle, by the magnitude of its left, top, right, and bottom edges, etc.\) or constructed by combining an `Offset` and a `Size`. Rectangles can be inflated, deflated, combined, intersected, translated, queried, and more. Rectangles can be compared for equality and interpolated.
+* `Rect`是一个不变的，二维的，与轴对齐的浮点矩形，其坐标相对于给定的原点。可以通过各种方式（例如，通过其中心，通过边界圆，通过其左侧，顶部，右侧和底部边缘的大小等）来描述矩形，或者通过组合“`Offset`”和“`Size`”来构造矩形。 矩形可以放大，缩小，组合，相交，平移，查询等等。可以比较矩形是否相等并进行插值。 
 * `RRect` augments a `Rect` with four independent radii \(via `Radius`\) corresponding to its corners. Rounded rectangles can be described in various ways \(e.g., by offsets to each of its sides and one or more radii, by a bounding box fully enclosing the rounded rectangle with one or more radii, etc.\). Rounded rectangles define a number of sub-rectangles: a bounding rectangle \(`RRect.outerRect`\), an inner rectangle with left and right edges matching the base rectangle and top and bottom edges inset to coincide with the rounded corners' centers \(`RRect.wideMiddleRect`\), a similar rectangle but with the sets reversed \(`RRect.tallMiddleRect`\), and a rectangle that is the intersection of these two \(`RRect.middleRect`\). A rounded rectangle is said to describe a “stadium” if it possesses a side with no straight segment \(e.g., entirely drawn by the two rounded corners\). Rounded rectangles can be interpolated.
 
-## What types are used to describe coordinate spaces?
+## 什么类型用来描述坐标空间 coordinate spaces?
 
 * `Axis` represents the X- or Y-axis \(horizontal or vertical, respectively\) relative to a coordinate space. The coordinate space can be arbitrarily transformed and therefore need not be parallel to the screen’s edges.
 * `AxisDirection` applies directionality to an axis. The value represents the direction in which values increase along an associated axis, with the origin rooted at the opposite end \(e.g., `AxisDirection.down` positions the origin at the top with positive values growing downward\).
@@ -27,13 +28,13 @@
   * This is typically subject to the growth direction \(e.g., the scroll direction is flipped when growth is reversed\).
   * Confusingly, this refers to the direction the content is moving on screen rather than where the user is scrolling \(e.g., scrolling down a web page causes the page’s contents to move upward; this would be classified as `ScrollDirection.reverse` since this motion is opposite the axis direction\).
 
-## What types are used to describe graphics?
+## 什么类型用来描述图形 graphics?
 
-* `Color` is a 32-bit immutable quantity describing alpha, red, green, and blue color channels. Alpha can be defined using an opacity value from zero to one. Colors can be interpolated and converted into a luminance value.
-* `Shadow` represents a single drop shadow with a color, an offset from the casting element, and a blur radius characterizing the Gaussian blur applied to the shadow.
-* `Gradient` describes one or more smooth color transitions. Gradients can be interpolated and scaled; gradients can also be used to obtain a reference to a corresponding shader. Linear, radial, and sweep gradients are supported \(via `LinearGradient`, `RadialGradient`, and `SweepGradient`, respectively\). `TileMode` determines how a gradient paints beyond its defined bounds. Gradients may be clamped \(e.g., hold their initial and final values\), repeated \(e.g., restarted at their bounds\), or mirrored \(e.g., restarted but with initial and final values alternating\).
+* `Color` 是一个32位不变量，描述alpha，红色，绿色和蓝色通道。可以使用从零到一的不透明度值定义Alpha。可以插值颜色并将其转换为亮度值。
+* `Shadow` 提供了颜色，投影元素的偏移以及模糊半径的单个投影阴影，该模糊半径表示应用于阴影的高斯模糊。
+* `Gradient` 描述一种或多种平滑的颜色过渡。可以对渐变进行插值和缩放； 渐变也可以用于获取对相应着色器的引用。支持线性，径向和扫描渐变（分别通过`LinearGradient`，`RadialGradient`和`SweepGradient`）。`TileMode` 确定渐变如何绘制超出其定义的边界。Gradients may be clamped \(e.g., hold their initial and final values\), repeated \(e.g., restarted at their bounds\), or mirrored \(e.g., restarted but with initial and final values alternating\).
 
-## How are tree nodes modeled?
+## 树节点如何建模？ ‌
 
 * `AbstractNode` represents a node in a tree without specifying a particular child model \(i.e., the tree's actual structure is left as an implementation detail\). Concrete implementations must call `AbstractNode.adoptChild` and `AbstractNode.dropChild` whenever the child model changes.
   * `AbstractNode.owner` references an arbitrary object shared by all nodes in a subtree.

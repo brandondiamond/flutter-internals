@@ -1,9 +1,10 @@
-# Framework
+# Framework - 框架
 
-## How is the app bootstrapped?
+## Flutter app 如何启动界面?
 
-* `runApp` kicks off binding initialization by invoking the `WidgetsFlutterBinding`/`RenderingFlutterBinding.ensureInitialized` static method. This calls each binding’s `initInstances` method, allowing each to initialize in turn.
-  * This flow is built using mixin chaining: each of the concrete bindings \(e.g., `WidgetsFlutterBinding`\) extends `BaseBinding`, the superclass constraint shared by all binding mixins \(e.g., `GestureBinding`\). Consequently, common methods \(like `BaseBinding.initInstances`\) can be chained together via super invocations. These calls are linearized from left-to-right, starting with the superclass and proceeding sequentially through the mixins; this strict order allows later bindings to depend on earlier ones.
+* `runApp` 通过调用静态方法 `WidgetsFlutterBinding`/`RenderingFlutterBinding.ensureInitialized` 初始化绑定. 这将调用每个绑定的`initInstances`方法，从而允许每个对象依次初始化。\(就是mixin - with实现的多继承,每个bindng都触发了init\)
+  * 该流程是使用_**mixin**_链接构建的：每个具体的绑定（例如`WidgetsFlutterBinding`）都扩展了`BaseBinding`，所有 "Binding" _**mixin**_（例如`GestureBinding`）共享的超类约束。因此，可以通过超级调用将常用方法（如`BaseBinding.initInstances`）链接在一起。这些调用是从左到右线性化的，从超类开始，然后依次进行混合。这种严格的顺序允许以后的绑定依赖更早的绑定。
+    * 注意:mixin跟with的写法,dart有一种类似多继承的方式,每个mixin实现不同的自身逻辑,依附于同一个父类
 * `RendererBinding.initInstances` creates the `RenderView`, passing an initial `ViewConfiguration` \(describing the size and density of the render surface\). It then prepares the first frame \(via `RenderView.prepareInitialFrame`\); this schedules the initial layout and initial paint \(via `RenderView.scheduleInitialLayout` and `RenderView.scheduleInitialPaint`; the latter creates the root layer, a `TransformLayer`\). This marks the `RenderView` as dirty for layout and painting but does not actually schedule a frame.
   * This is important since users may wish to begin interacting with the framework \(by initializing bindings via `BaseBinding.ensureInitialized`\) before starting up the app \(via `runApp`\). For instance, a plugin may need to block on a backend service before it can be used.
 * Finally, the `RendererBinding` installs a persistent frame callback to actually draw the frame \(`WidgetsBinding` overrides the method invoked by this callback to add the build phase\). Note that nothing will invoke this callback until the `Window.onDrawFrame` handler is installed. This will only happen once a frame has actually been scheduled.
@@ -17,25 +18,25 @@
 * Finally, after scheduling the first frame \(via  `SchedulerBinding.instance.ensureVisualUpdate`, which will lazily install the frame callbacks\), `runApp` invokes `SchedulerBinding.scheduleWarmUpFrame`, manually pumping the rendering pipeline. This gives the initial frame extra time to render as it’s likely the most expensive.
 * `SchedulerBinding.ensureFrameCallbacksRegistered` lazily installs frame callbacks as part of `SchedulerBinding.scheduleFrame`. Frames are typically scheduled in response to `PipelineOwner.requestVisualUpdate` \(due to UI needing painting, layout, or a rebuild\). Once configured, these callbacks \(`Window.onBeginFrame`, `Window.onDrawFrame`\) are invoked once per frame by the engine, running transient and persistent processes, respectively. The latter is generally responsible for ticking animations whereas the former runs the actual building and rendering pipeline. 
 
-## How is a frame rendered?
+## 每一帧如何渲染的?
 
-* Once a frame is scheduled and callbacks are registered \(via `SchedulerBinding.ensureFrameCallbacksRegistered`\), the engine begins requesting frames automatically. The frame callbacks invoke handlers in response to these requests. In particular, `SchedulerBinding.drawFrame` processes persistent frame callbacks which are used to implement Flutter’s rendering pipeline. `WidgetsBinding.drawFrame` overrides `RendererBinding.drawFrame` to add the build process to this pipeline.
-* The rendering pipeline builds widgets, performs layout, updates compositing bits, paints layers, and finally composites everything into a scene which it uploads to the engine \(via `RenderView.compositeFrame`\). Semantics are also updated by this process.
+* 当第一帧已经就绪,并且回调已经被注册 \(via `SchedulerBinding.ensureFrameCallbacksRegistered`\), flutter引擎便开始自动处理每一帧. 帧回调响应这些请求调用处理程序。特别是Flutter实现在渲染管道\(rendering pipeline\) 的 `SchedulerBinding.drawFrame`持久帧回调方法. `WidgetsBinding.drawFrame`重写`RendererBinding.drawFrame`以将构建过程添加到此管道。
+* 渲染管道会构建小部件，渲染管道可构建小部件，执行布局，更新合成位，绘制图层，最后将所有内容合成到一个场景中，并通过`RenderView.compositeFrame`上载到引擎。语义也会通过此过程进行更新。 
 * `RenderView.compositeFrame` retains a reference to the root layer \(a `TransformLayer`\) which it recursively composites using `Layer.buildScene`. This iterates through all layers that`needsAddToScene`. If true, the layer is freshly composited into the scene. If false, previous invocations of `addToScene` will have stored an `EngineLayer` in `Layer.engineLayer`, which refers to a retained rendering of the layer subtree. A reference to this retained layer is added to the scene via `SceneBuilder.addRetained`. Once the `Scene` is built, it is uploaded to the engine via `Window.render`.
 
-## How does the framework interact with the engine?
+## 框架如何与引擎交互？ 
 
-* The framework primarily interacts via the `Window` class, a dart interface with hooks into and out of the engine.
-* The majority of the framework’s flows are driven by frame callbacks invoked by the engine. Other entry points into the framework include gesture handling, platform messaging, and device messaging.
+* 框架主要通过Window类进行交互，该Window类是带有进出 dart engine 的hook接口。 
+* 框架的主要流程是由engine调用框架回调驱动的\(就是说主要是dart本身驱动框架\)。框架的其他入口点包括手势处理\(gesture handling\)，平台消息传递\(platform messaging\)和设备消息传递\(device messaging\)。
 * Each binding serves as the singleton root of a subsystem within the framework; in several cases, bindings are layered to augment more fundamental bindings \(i.e., `WidgetsBinding` adds support for building to `RendererBinding`\). All direct framework/engine interaction is managed via the bindings, with the sole exception of the `RenderView`, which uploads frames to the engine. 
 
-## What bindings are implemented?
+## 实现了那些功能绑定\(bindings\)?
 
 * `GestureBinding` facilitates gesture handling across the framework, maintaining the gesture arena and pointer routing table.
   * Handles `Window.onPointerDataPacket`.
-* `ServicesBinding` facilitates message passing between the framework and platform.
+* `ServicesBinding` \(服务消息绑定\) 它辅助消息在框架与平台\(原生系统\)之间的传递.
   * Handles `Window.onPlatformMessage`.
-* `SchedulerBinding` manages a variety of callbacks \(transient, persistent, post-frame, and non-rendering tasks\), tracking lifecycle states and scheduler phases. It is also responsible for explicitly scheduling frames when visual updates are needed.
+* `SchedulerBinding` 管理各种回调（临时，持久，首帧回调和非渲染任务），跟踪生命周期状态和调度程序阶段。 也负责当需要更新界面时显式调度帧 .
   * Handles `Window.onDrawFrame`, `Window.onBeginFrame`.
   * Invokes `Window.scheduleFrame`.
 * `PaintingBinding` owns the image cache which manages memory allocated to graphical assets used by the application. It also performs shader warm up to avoid stuttering during drawing \(via `ShaderWarmUp.execute` in `PaintingBinding.initInstances`\). This ensures that the corresponding shaders are compiled at a predictable time.
@@ -47,8 +48,8 @@
   * Handles `Window.onAccessibilityFeaturesChanged`, `Window.onLocaleChanged`.
 * `TestWidgetsFlutterBinding` supports the widget testing framework.
 
-## How do global keys work?
+## global keys 如何运作?
 
-* `Element.inflateWidget` checks for a global key before inflating a widget. If a global key is found, the corresponding element is returned instead \(preserving the corresponding element and rendering subtree\).
-* Global keys are cleaned up when the corresponding element is unmounted \(via `Element.unmount`\).
+* `Element.inflateWidget` 在填充小部件之前检查 **global key**。如果找到了 **global key**，则返回相应的元素（保留相应的元素并渲染子树）。
+* Global keys 在对应的元素被删除\(unmounted\)时被删除 \(via `Element.unmount`\).
 

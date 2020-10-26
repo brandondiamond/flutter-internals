@@ -1,8 +1,8 @@
 # Messaging
 
-## How are messages passed between the framework and platform code?
+## 如何在框架和平台代码之间传递消息？
 
-* `ServicesBinding.initInstances` sets the global message handler \(`Window.onPlatformMessage`\) to `ServicesBinding.defaultBinaryMessenger`. This instance processes messages from the platform \(via `BinaryMessenger.handlePlatformMessage`\) and allows other framework code to register message handlers \(via `BinaryMessenger.setMessageHandler`\). Handlers subscribe to a channel \(an identifier used to multiplex the single engine callback\) using an identifier shared by the framework and the platform.
+* `ServicesBinding.initInstances` 设置全局消息控制器 \(`Window.onPlatformMessage`\) 给`ServicesBinding.defaultBinaryMessenger`. This instance processes messages from the platform \(via `BinaryMessenger.handlePlatformMessage`\) and allows other framework code to register message handlers \(via `BinaryMessenger.setMessageHandler`\). Handlers subscribe to a channel \(an identifier used to multiplex the single engine callback\) using an identifier shared by the framework and the platform.
 
 ## What are the building blocks of messaging?
 

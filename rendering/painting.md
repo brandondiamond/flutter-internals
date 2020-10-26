@@ -1,6 +1,6 @@
 # Painting
 
-## What are the painting building blocks?
+## 什么是paint绘制的基础?
 
 * `Path` describes a sequence of potentially disjoint movements on a plane. Paths tracks a current point as well as one or more subpaths \(created via `Path.moveTo`\). Subpaths may be closed \(i.e., the first and last points are coincident\), open \(i.e., the first and last points are distinct\), or self intersecting \(i.e., movements within the path intersect\). Paths incorporate lines, arcs, beziers, and more; each operation begins at the current point and, once complete, defines the new current point. The current point begins at the origin. Paths can be queried \(via `Path.contains`\), transformed \(via `Path.transform`\), and merged \(via `Path.combine`, which accepts a `PathOperation`\).
   * `PathFillType` defines the criteria determining whether a point is contained by the path. `PathFillType.evenOdd` casts a ray from the point outward, summing the number of edge crossings; an odd count indicates that the point is internal. `PathFillType.nonZero` considers the path’s directionality. Again casting a ray from the point outward, this method sums the number of clockwise and counterclockwise crossings. If the counts aren’t equal, the point is considered to be internal.
@@ -24,5 +24,5 @@
     * Discrete segments are joined according to a `StrokeJoin` value \(via `Paint.strokeJoin`; `StrokeJoin.miter` is the default and extends the original line such that the next can be drawn directly from it\). A limit may be specified to prevent the original line from extending too far \(via `Paint.strokeMiterLimit`; once exceeded, the join reverts to `StrokeJoin.bevel`\).
   * `ColorFilter` describes a function mapping from two input colors \(e.g., the paint’s color and the destination’s color\) to a final output color \(e.g., the final composited color\). If a `ColorFilter` is provided, it overrides both the paint color and shader; otherwise, the shader overrides the color.
   * `MaskFilter` applies a filter \(e.g., a blur\) to the drawing once it is complete but before it is composited. Currently, this is limited to a Gaussian blur.
-* `Shader` is a handle to a Skia shader utilized by the engine. Several are exposed within the framework, including `Gradient` and `ImageShader`. These are analogous, with the former generating pixels by smoothly blending colors and the latter reading them directly from an image. Both support tiling so that the original pixels can be extended beyond their bounds \(a different `TileMode` may be specified in either direction\); `ImageShader` also supports an arbitrary matrix to be applied to the source image.
+* `Shader`是引擎使用的Skia着色器的手柄。框架中包含多个控件，包括`Gradient`和`ImageShader`。这俩是类似的，前者通过平滑地混合颜色来生成像素，而后者则直接从图像中读取它们。两者都支持平铺，以便可以将原始像素扩展到其边界之外（可以在任一方向上指定不同的`TileMode`）；`ImageShader`还支持将任意矩阵应用于源图像。 
 
